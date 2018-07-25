@@ -1,3 +1,9 @@
+cache
+raw_data
+figures
+results
+images
+
 # History files
 .Rhistory
 .Rapp.history

@@ -1,0 +1,175 @@
+---
+title: "Selective Sweeps Sweepfinder 2"
+output: github_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+
+library(VennDiagram)
+library(RColorBrewer)
+source("R/load.R")
+```
+
+## Aims for Selective Sweep Analysis
+
+1. Identify sweeps in each population that overlap with genes
+2. Quantify the overall number of significant sweeps in each population and their overlap
+
+## Sweeps overlapping genes
+
+Read the gff files for all genes near sweeps and tabulate with one row per gene
+
+```{r}
+folder=""
+sg_data <- load_sweep_genes(folder)
+
+sg_by_gene <- sg_data %>% filter(lr_threshold==30) %>% 
+  spread(population, num_sweeps) %>% 
+  mutate(gene_id = str_match(attributes,pattern = "ID=([^;]+)")[,2])
+```
+
+Attach sweep information to annotations
+
+```{r}
+annotations <- read_tsv("raw_data/genome/annotation_table.tsv") %>% 
+  mutate(gene_id = str_extract(aten_id,pattern = "aten_0.1.m[0-9]+.[0-9]+"))
+
+annotated_sweeps <- sg_by_gene %>% left_join(annotations,by="gene_id")
+```
+
+Make a venn diagram based on genes associated with selective sweeps
+
+```{r}
+mi <- sg_by_gene %>% filter(!is.na(MI)) %>% pull(gene_id)
+fi <- sg_by_gene %>% filter(!is.na(FI)) %>% pull(gene_id)
+di <- sg_by_gene %>% filter(!is.na(DI)) %>% pull(gene_id)
+pr <- sg_by_gene %>% filter(!is.na(PR)) %>% pull(gene_id)
+pi <- sg_by_gene %>% filter(!is.na(PI)) %>% pull(gene_id)
+
+area1 <- length(fi)
+area2 <- length(di)
+area3 <- length(pr)
+area4 <- length(pi)
+
+n12 <- length(intersect(fi,di))
+n13 <- length(intersect(fi,pr))
+n14 <- length(intersect(fi,pi))
+n23 <- length(intersect(di,pr))
+n24 <- length(intersect(di,pi))
+n34 <- length(intersect(pr,pi))
+
+n123 <- length(intersect(intersect(fi,di),pr))
+n124 <- length(intersect(intersect(fi,di),pi))
+
+n134 <- length(intersect(intersect(fi,pr),pi))
+n234 <- length(intersect(intersect(di,pr),pi))
+
+n1234 <- length(intersect(intersect(intersect(fi,di),pi),pr))
+
+pdf("figures/SF2_genes_30_Venn.pdf")
+draw.quad.venn(area1,area2,area3,area4,n12,n13,n14,n23,n24,n34,n123,n124,n134,n234,n1234,
+               category = c("FI","DI","PR","PI"),
+               fill = brewer.pal(4,"Set3"),
+              fontface = rep("plain", 15))
+dev.off()
+```
+
+Which genes are under selection in both plume sites and not in marine?
+
+```{r}
+marine_both <- intersect(fi,pi)
+plume_both <- intersect(di,pr)
+marine <- c(fi,pi)
+plume <- c(di,pr)
+
+marine_only <- setdiff(marine_both,plume)
+plume_only <- setdiff(plume_both,marine)
+
+marine_only_genes <- annotated_sweeps %>% filter(gene_id %in% marine_only)
+plume_only_genes <- annotated_sweeps %>% filter(gene_id %in% plume_only)
+write_tsv(marine_only_genes, "results/marine_only_sweep_genes.tsv")
+write_tsv(plume_only_genes, "results/plume_only_sweep_genes.tsv")
+```
+
+# Plot sweeps across the entire genome
+
+We load the raw sweepfinder scores
+
+```{r}
+sf2_all <- load_sf2(folder) %>% 
+  arrange(desc(length)) %>% 
+  mutate(contig_band = as.factor(contig_index %% 2))
+
+contig_offsets <- load_contig_offsets()
+```
+
+```{r}
+sf2_plottable <- sf2_all %>% filter(pop!="mi")
+
+#sf2_all  %>% pull(contig_index) %>% unique()
+
+genome_wide_sweep_plot <- ggplot(sf2_plottable) + 
+  geom_point(aes(x=location,y=LR,color = contig_band),size=0.1) + 
+  facet_grid(catchment~condition) + guides(color = FALSE)
+
+
+ggsave(genome_wide_sweep_plot,filename = "figures/genome_wide_sweeps.pdf", width = 10)
+```
+
+# Select regions in detail.
+
+
+```{r}
+aten_gff <- read_tsv("raw_data/genome/aten_0.11.maker_post_001.genes.gff",
+                     col_names = c("seqid","source","type","start","end","score","strand","phase","attributes"))
+```
+
+
+```{r}
+sf2_plottable_pr <- sf2_plottable %>% filter(scaffold=="Sc0000029") %>%  
+  mutate(location = location - contig_offsets['Sc0000029'])
+
+sweep_detail_plot("Sc0000029",xl=2.8e6,rl=3e6,aten_gff,sf2_plottable, contig_offsets)
+```
+
+```{r}
+for (i in 1:nrow(plume_only_genes)) {
+  row_data <- plume_only_genes %>% filter(row_number()==i)
+  with(row_data, {
+    lp <- sweep_detail_plot(seqid,xl=start-10000,rl=end+10000,aten_gff,sf2_plottable,contig_offsets)
+    fname <- paste(c("figures/plume_only/","sweep_detail_",seqid,"_",start,".pdf"),collapse = "")
+    ggsave(lp,filename = fname,width=10)
+    }
+  )
+}
+```
+Looking at the Plume Only genes we can identify several regions with major sweeps.
+
+Serine Threonine Phosphatase regulatory ankyrin repeat containing
+
+```{r}
+sweep_detail_plot("Sc0000026",xl=2.04e6,rl=2.09e6,aten_gff,sf2_plottable,contig_offsets) 
+```
+
+Integrin-beta, histone lysine methyltransferase
+
+```{r}
+sweep_detail_plot("Sc0000039",xl=1.53e6,rl=1.62e6,aten_gff,sf2_plottable,contig_offsets) 
+```
+
+
+
+GDP-Fucose transporters
+
+```{r}
+source("R/sweep_detail.R")
+sweep_detail_plot("Sc0000168",xl=5e4,rl=12e4,aten_gff,sf2_plottable,contig_offsets) 
+```
+
+
+
+
+

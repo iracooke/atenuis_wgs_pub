@@ -1,0 +1,78 @@
+---
+title: "Population Structure"
+author: "Ira Cooke"
+date: "10/11/2017"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(fig.width=12, fig.height=8,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+We first use MDS and PCA via the angsd -doIBS method to attempt to infer the correct number of clusters
+
+```{r}
+
+ibs_indv <- read_table("raw_data/NGSAdmix/low_cov_wb.bamlist",col_names = c("path")) %>% 
+  mutate(sample = str_extract(basename(path),"[^_]*")) %>% 
+  mutate(pop = str_extract(sample,"[^\\W]+")) %>% 
+  select(-path)
+
+ibsmat <- read_table2("raw_data/NGSAdmix/low_cov_wb.ibs.arg.ibsMat",col_names = ibs_indv$sample) %>% 
+  as.matrix()
+rownames(ibsmat) <- ibs_indv$sample
+
+ibs_mds <- cmdscale(as.dist(ibsmat))
+
+ibs_mds_p <- data.frame(x=ibs_mds[,1],y=ibs_mds[,2],ibs_indv)
+```
+
+```{r}
+ggplot(ibs_mds_p,aes(x=x,y=y)) + geom_point(aes(color=pop))
+
+
+ggsave("figures/p_mds_ngsadmix.png",p_pca_ngsadmix,width=12,height=8)
+```
+
+
+```{r}
+q2_admix <- read_table("raw_data/NGSAdmix/low_cov_wb.ngsadmix.qopt",col_names = FALSE) %>% cbind(ibs_indv) %>% gather(cluster,proportion,-pop,-sample) %>% arrange(pop=="MI")
+```
+
+Admixture proportions with K=2
+
+```{r}
+ngsadmix_p <- ggplot(q2_admix ,aes(x=reorder(sample,pop=="MI"),y=proportion)) + 
+  geom_bar(aes(fill=cluster,color=cluster),stat="identity") + 
+  theme_minimal() + theme(line = element_blank()) +
+  theme(axis.text.x = element_text(angle=90)) + theme(axis.ticks = element_blank()) + xlab("") + ylab("Proportion") + scale_fill_manual(values = c("X1"="seagreen","X2"="blue"),labels = c("X1"="Magnetic Island","X2"="North")) + scale_color_manual(values = c("X1"="seagreen","X2"="blue"),labels = c("X1"="Magnetic Island","X2"="North")) + theme(axis.text.x = element_blank(), legend.title = element_blank(), text = element_text(size=20))
+
+ggsave("figures/ngsadmix.png",width = 12,height=8)
+```
+
+
+```{r}
+library(ggrepel)
+ggplot(ibs_pca ,aes(x=x,y=y)) + geom_point(aes(color=Pop)) + geom_label_repel(data=ibs_pca %>% filter(Sample %in% admixed_indv$Sample),aes(label=Sample))
+```
+
+```{r}
+ggplot(ibs_mds_p ,aes(x=x,y=y)) + geom_point(aes(color=Pop)) + geom_label_repel(data=ibs_mds_p %>% filter(Sample %in% admixed_indv$Sample),aes(label=Sample))
+```
+
+Plotting IBS distance matrix as a tree
+
+```{r}
+library(phangorn)
+library(ggtree)
+
+treeUPGMA <- upgma(as.dist(ibsmat))
+
+gt <- ggtree(treeUPGMA)
+gt %<+% (as.data.frame(ibs_indv) %>% select(Sample,Pop)) + geom_tippoint(aes(color=Pop),size=1) + theme(legend.position = "right") + geom_tiplab(aes(color=Pop))
+```
