@@ -1,0 +1,34 @@
+---
+title: "02_sweep_genome_tracks.Rmd"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Convert SF2 values for each population into a wig file
+
+```{bash}
+cd raw_data/SF2/
+for pop in DI FI PI PR MI;do
+  echo "track type=wiggle_0 name=${pop}" > ${pop}_sf2.wig
+
+  for f in $(cat contig_lens.txt | awk '{print $1}' | tr '\t' ' ');do 
+    start_pos=$(head -n 2 DI/${f}.sf2 | grep -v 'loc' | awk '{printf("%d",$1)}')
+    echo "fixedStep chrom=${f} start=${start_pos} step=1000" >> ${pop}_sf2.wig
+    cat "${pop}/$f.sf2" | grep -v 'location' | awk '{printf("%.2f\n",$2)}' >> ${pop}_sf2.wig
+  done
+done
+```
+
+
+# Print sweep regions in a form that is easy to cut-paste into IGV
+
+```{bash}
+cd raw_data/SF2
+cat sweeps_stronger_in_plume_merged.bed | awk '{printf("%s:%d-%d\n", $1, $2-50000, $3+50000)}'
+cat sweeps_stronger_in_marine_merged.bed | awk '{printf("%s:%d-%d\n", $1, $2-50000, $3+50000)}'
+```
+

@@ -96,3 +96,49 @@ load_sweep_genes <- function(folder = "_angsd"){
   }
   sg_data
 }
+
+
+
+load_sf2_differentials <- function(){
+  
+  
+  sf2_all <- load_sf2(folder) %>% 
+    arrange(desc(length)) %>% 
+    mutate(contig_band = as.factor(contig_index %% 2))
+  
+  contig_offsets <- load_contig_offsets()
+  
+  sf2_wide <- sf2_all %>% 
+    select(location,scaffold,pop,LR) %>%  
+    spread(key = pop, value = LR) %>% 
+    arrange(location) %>% 
+    na.omit()
+  
+  cachefile <- "cache/sf2_wide_p.rds"
+  if( file.exists(cachefile)){
+    sf2_wide_p <- read_rds(cachefile)
+  } else {
+    
+    getp <- function(p1,p2,m1,m2){
+      p <- 1
+      tryCatch(
+        p <- t.test(c(p1,p2),c(m1,m2))$p.value,
+        error = function(cond){p <- 1},
+        warning = function(cond){p <- 1}
+      )
+      return(p)
+    }
+    
+    sf2_wide_p <- sf2_wide %>% 
+      mutate(p = 
+               list(di,pi,fi,pr) %>% 
+               pmap_dbl(getp)
+      ) %>% 
+      mutate(p_vs_m = (di+pi) - (fi+pr))
+    
+    
+    write_rds(sf2_wide_p , path = cachefile)
+  }
+}
+
+

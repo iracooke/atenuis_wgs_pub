@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Session genome="aten_011" hasGeneTrack="true" hasSequenceTrack="true" locus="Sc0000032:1495678-1828502" nextAutoscaleGroup="5" path="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/igv_session.xml" version="8">
+    <Resources>
+        <Resource path="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/raw_data/SF2/FI_sf2.wig"/>
+        <Resource path="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/raw_data/SF2/PR_sf2.wig"/>
+        <Resource path="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/raw_data/SF2/DI_sf2.wig"/>
+        <Resource path="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/raw_data/SF2/PI_sf2.wig"/>
+        <Resource path="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/raw_data/SF2/MI_sf2.wig"/>
+    </Resources>
+    <Panel height="735" name="DataPanel" width="2007">
+        <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.MergedTracks" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="81ddd092-2839-4743-8e02-c9311e3c3afd" name="Overlay" renderer="BAR_CHART" sortable="true" visible="true">
+            <Track xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.DataSourceTrack" color="153,0,0" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" height="715" id="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/raw_data/SF2/DI_sf2.wig" name="DI" normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean" xsi:type="dataSourceTrack">
+                <DataRange baseline="0.0" drawBaseline="true" flipAxis="false" maximum="182.07" minimum="0.0" type="LINEAR"/>
+            </Track>
+            <Track xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.DataSourceTrack" color="204,153,0" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" height="715" id="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/raw_data/SF2/PR_sf2.wig" name="PR" normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean" xsi:type="dataSourceTrack">
+                <DataRange baseline="0.0" drawBaseline="true" flipAxis="false" maximum="182.07" minimum="0.0" type="LINEAR"/>
+            </Track>
+            <Track xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.DataSourceTrack" color="0,102,204" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" height="715" id="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/raw_data/SF2/PI_sf2.wig" name="PI" normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean" xsi:type="dataSourceTrack">
+                <DataRange baseline="0.0" drawBaseline="true" flipAxis="false" maximum="182.07" minimum="0.0" type="LINEAR"/>
+            </Track>
+            <Track xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.DataSourceTrack" color="0,102,255" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" height="715" id="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/raw_data/SF2/FI_sf2.wig" name="FI" normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean" xsi:type="dataSourceTrack">
+                <DataRange baseline="0.0" drawBaseline="true" flipAxis="false" maximum="182.07" minimum="0.0" type="LINEAR"/>
+            </Track>
+            <Track xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.DataSourceTrack" color="0,153,51" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" height="715" id="/Users/icooke/Dropbox/ActiveProjects/atenuis_wgs_pub/raw_data/SF2/MI_sf2.wig" name="MI" normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean" xsi:type="dataSourceTrack">
+                <DataRange baseline="0.0" drawBaseline="true" flipAxis="false" maximum="182.07" minimum="0.0" type="LINEAR"/>
+            </Track>
+        </Track>
+    </Panel>
+    <Panel height="248" name="FeaturePanel" width="2007">
+        <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" height="114" id="Reference sequence" name="Reference sequence" sortable="false" visible="true"/>
+        <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" colorScale="ContinuousColorScale;0.0;96.0;255,255,255;0,0,178" displayMode="EXPANDED" featureVisibilityWindow="-1" fontSize="10" height="114" id="aten_011_genes" name="Gene" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count">
+            <DataRange baseline="0.0" drawBaseline="true" flipAxis="false" maximum="96.0" minimum="0.0" type="LINEAR"/>
+        </Track>
+    </Panel>
+    <PanelLayout dividerFractions="0.7444444444444445"/>
+    <Regions>
+        <Region chromosome="Sc0000032" description="" end="1891975" start="1300428"/>
+        <Region chromosome="Sc0000010" description="" end="3810000" start="3770000"/>
+        <Region chromosome="Sc0000014" description="" end="1440000" start="1410000"/>
+        <Region chromosome="Sc0000014" description="" end="6040000" start="6010000"/>
+    </Regions>
+    <HiddenAttributes>
+        <Attribute name="DATA FILE"/>
+        <Attribute name="DATA TYPE"/>
+        <Attribute name="NAME"/>
+    </HiddenAttributes>
+</Session>
