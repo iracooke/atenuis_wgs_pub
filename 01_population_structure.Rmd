@@ -1,78 +1,95 @@
 ---
 title: "Population Structure"
-author: "Ira Cooke"
-date: "10/11/2017"
 output: github_document
 ---
 
-```{r}
+```{r echo=FALSE}
 knitr::opts_chunk$set(fig.width=12, fig.height=8,
                       echo=FALSE, warning=FALSE, message=FALSE)
 ```
 
+
 ```{r}
 library(tidyverse)
-```
-
-We first use MDS and PCA via the angsd -doIBS method to attempt to infer the correct number of clusters
-
-```{r}
-
-ibs_indv <- read_table("raw_data/NGSAdmix/low_cov_wb.bamlist",col_names = c("path")) %>% 
-  mutate(sample = str_extract(basename(path),"[^_]*")) %>% 
-  mutate(pop = str_extract(sample,"[^\\W]+")) %>% 
-  select(-path)
-
-ibsmat <- read_table2("raw_data/NGSAdmix/low_cov_wb.ibs.arg.ibsMat",col_names = ibs_indv$sample) %>% 
-  as.matrix()
-rownames(ibsmat) <- ibs_indv$sample
-
-ibs_mds <- cmdscale(as.dist(ibsmat))
-
-ibs_mds_p <- data.frame(x=ibs_mds[,1],y=ibs_mds[,2],ibs_indv)
-```
-
-```{r}
-ggplot(ibs_mds_p,aes(x=x,y=y)) + geom_point(aes(color=pop))
-
-
-ggsave("figures/p_mds_ngsadmix.png",p_pca_ngsadmix,width=12,height=8)
-```
-
-
-```{r}
-q2_admix <- read_table("raw_data/NGSAdmix/low_cov_wb.ngsadmix.qopt",col_names = FALSE) %>% cbind(ibs_indv) %>% gather(cluster,proportion,-pop,-sample) %>% arrange(pop=="MI")
-```
-
-Admixture proportions with K=2
-
-```{r}
-ngsadmix_p <- ggplot(q2_admix ,aes(x=reorder(sample,pop=="MI"),y=proportion)) + 
-  geom_bar(aes(fill=cluster,color=cluster),stat="identity") + 
-  theme_minimal() + theme(line = element_blank()) +
-  theme(axis.text.x = element_text(angle=90)) + theme(axis.ticks = element_blank()) + xlab("") + ylab("Proportion") + scale_fill_manual(values = c("X1"="seagreen","X2"="blue"),labels = c("X1"="Magnetic Island","X2"="North")) + scale_color_manual(values = c("X1"="seagreen","X2"="blue"),labels = c("X1"="Magnetic Island","X2"="North")) + theme(axis.text.x = element_blank(), legend.title = element_blank(), text = element_text(size=20))
-
-ggsave("figures/ngsadmix.png",width = 12,height=8)
-```
-
-
-```{r}
 library(ggrepel)
-ggplot(ibs_pca ,aes(x=x,y=y)) + geom_point(aes(color=Pop)) + geom_label_repel(data=ibs_pca %>% filter(Sample %in% admixed_indv$Sample),aes(label=Sample))
+library(ggpubr)
+library(RColorBrewer)
 ```
+
 
 ```{r}
-ggplot(ibs_mds_p ,aes(x=x,y=y)) + geom_point(aes(color=Pop)) + geom_label_repel(data=ibs_mds_p %>% filter(Sample %in% admixed_indv$Sample),aes(label=Sample))
+source("R/load.R")
+source("R/constants.R")
+sample_table <- load_sample_table()
 ```
 
-Plotting IBS distance matrix as a tree
+PCAngst was used to examine population structure.  This program is specifically designed to work with low coverage data and calculates a sample covariance matrix (used for PCA plotting) and admixture proportions based on the optimal number of clusters. 
+
+As input data PCAngst we used filtered SNPs in vcf format that were called using Freebayes. The script [01_import_vcf.sh](hpc/NGSAdmix/01_import_vcf.sh) uses angst to convert these Freebayes SNP calls into Beagle format while also filtering for Hardy Weinberg equilibrium (p < 1e-6). The command takes the form
+
+```bash
+angsd -vcf-gl <input_vcf> -out <beagle_output> -fai <genome_index> -nind 148 -doMaf 1 -doGlf 2 -doMajorMinor 1 -SNP_pval 1e-6
+```
+
+PCAngst was then run on these Beagle formatted files using the command;
+
+```bash
+python pcangsd.py -beagle <beagle_file> -threads 40 -admix -admix_save -admix_auto 10000 -o <output_file>
+```
+
+The covariance matrix can be used as the basis for a PCA.  Plotting the first two principle components reveals the clear Magnetic Island  - North distinction.
 
 ```{r}
-library(phangorn)
-library(ggtree)
+accelerate_covmat <- read_table2("hpc/NGSadmix/accelerate_fb_pcangst_2.cov",col_names = FALSE) %>% 
+  as.matrix()
 
-treeUPGMA <- upgma(as.dist(ibsmat))
+sample_ids <- read_tsv("hpc/NGSAdmix/accelerate_individuals.txt",col_names = "sample_id") %>% 
+  pull(sample_id)
 
-gt <- ggtree(treeUPGMA)
-gt %<+% (as.data.frame(ibs_indv) %>% select(Sample,Pop)) + geom_tippoint(aes(color=Pop),size=1) + theme(legend.position = "right") + geom_tiplab(aes(color=Pop))
+colnames(accelerate_covmat) <- sample_ids
+rownames(accelerate_covmat) <- sample_ids
+
+pop_eigen <- eigen(accelerate_covmat)
+
+pop_pca <- data.frame(x=pop_eigen$vectors[,1],y=pop_eigen$vectors[,2],sample_id = sample_ids) %>% 
+  left_join(sample_table) %>% 
+  mutate(pop_order = site_order()[location_id])
+
+outliers <- c("MI-2-9","MI-1-16") # These don't seem to belong to either of the two main populations
+hybrids <- c("DI-2-4","PI-1-16","MI-1-1")
+
+label_pca <- pop_pca %>% mutate(label = ifelse(sample_id %in% c(outliers,hybrids), sample_id,""))
+
+ggplot(pop_pca ,aes(x=x,y=y)) + 
+  geom_point(aes(color=reorder(location_id,pop_order)),size=1) + 
+  theme_pubr() +
+  scale_color_manual(values = site_colors(), labels=site_labels()[names(site_colors())]) +
+  theme(legend.position = "bottom") +
+  geom_label_repel(data=label_pca,aes(label=label), size=2,min.segment.length = 0.1,point.padding = 0.3, nudge_x = 0.01) +
+    xlab("PC1") + ylab("PC2") +
+    theme(legend.title = element_blank(), text = element_text(size=10), legend.position = "right") + ylim(-0.16,0.05)
 ```
+
+Admixture proportions are also calculated by PCAngst (based on optimal K = 2).  These can be plotted in the style of a STRUCTURE plot as follows;
+
+```{r}
+q2_admix <- read_table2("hpc/NGSAdmix/accelerate_fb_pcangst_2.K2.a625.0.qopt",col_names = c("X2","X1")) %>% 
+  add_column(sample_id = sample_ids) %>% 
+  gather(cluster,proportion,-sample_id) %>% 
+  left_join(sample_table) %>% 
+  mutate(pop_order = site_order()[location_id])
+
+pop_colors <- site_colors()[c('MI',"FI")]
+names(pop_colors) <- c("X1","X2")
+
+ggplot(q2_admix ,aes(x=reorder(sample_id,desc(pop_order)),y=proportion)) + 
+  geom_bar(aes(fill=cluster,color=cluster),stat="identity") + 
+  theme_pubclean() + 
+  xlab("") + ylab("Proportion") + 
+  scale_color_manual(values = pop_colors) +
+  scale_fill_manual(values = pop_colors,labels = c("X1"="Magnetic Island","X2"="North")) + 
+  theme(axis.text.x = element_blank(), legend.title = element_blank(), legend.position = 'right') +
+  theme(line = element_blank()) +
+  guides(color=FALSE)
+```
+
