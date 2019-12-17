@@ -10,3 +10,7 @@ hpc/NGSadmix/accelerate_fb_pcangst_2.cov
 
 # msmc
 hpc/msmc/bootstrap_results
+
+# dadi
+hpc/dadi/optim
+hpc/dadi/dadi.thin1k.txt
