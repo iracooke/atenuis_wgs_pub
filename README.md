@@ -8,3 +8,5 @@ Commands and R code to accompany the paper
 - [Population Structure](01_population_structure.md)
 - [Estimating Mutation Rate](02_mutation_rates.md)
 - [Demographic History with MSMC](03_msmc.md)
+- [Demographic History with dadi](04_dadi.md)
+
