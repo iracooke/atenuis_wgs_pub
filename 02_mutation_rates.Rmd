@@ -31,9 +31,6 @@ Here we derive the mutation rate using the divergence between *Acropora digitife
 Synonymous substitution rates were estimated as follows;
 
 - Single copy orthologs shared by three Acropora species (*A. millepora*, *A. tenuis* and *A. digitifera*) were identified using [ProteinOrtho](https://www.bioinf.uni-leipzig.de/Software/proteinortho/) version 5.15 based on amino acid sequences of gene models. (See the script [01_protein_ortho.sh](hpc/orthology/01_protein_ortho.sh))
-```bash
-proteinortho5.pl -project='acropora' adi.faa amil.faa aten.faa
-```
 - Although three species were used to identify orthologs ( to ensure these were single copy genes common across Acroporid species ) only pairs of sequences from *A. tenuis* and *A. digitifera* were used for divergence estimates.  These pairs were extracted and used to generate protein alignments using [MAFFT](https://mafft.cbrc.jp/alignment/software/) version 7.407.  The script [02_extract_orthologs.sh](hpc/orthology/02_extract_orthologs.sh) captures this process.
 - Protein alignments were then converted to nucleotide alignments using [Pal2Nal](http://www.bork.embl.de/pal2nal/) version 14.
 - Finally these alignments were used as input for [codeml](http://abacus.gene.ucl.ac.uk/software/paml.html) which calculates values of dN and dS for each gene.

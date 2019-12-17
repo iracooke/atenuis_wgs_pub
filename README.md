@@ -6,3 +6,4 @@ Commands and R code to accompany the paper
 
 
 - [Population Structure](01_population_structure.md)
+- [Estimating Mutation Rate](02_mutation_rates.md)
