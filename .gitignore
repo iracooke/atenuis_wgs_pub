@@ -7,3 +7,6 @@ raw_data/~*
 # NGSADdmix
 hpc/NGSadmix/accelerate_fb_pcangst_2.K2.a625.0.qopt
 hpc/NGSadmix/accelerate_fb_pcangst_2.cov
+
+# msmc
+hpc/msmc/bootstrap_results
