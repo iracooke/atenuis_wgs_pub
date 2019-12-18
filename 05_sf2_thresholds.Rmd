@@ -139,13 +139,12 @@ discrete_fdr_d_all_2e <- discrete_fdr_d_all %>%
 discrete_fdr_d_all_2e$model <- factor(discrete_fdr_d_all_2e$model, levels = two_epoch_models)
 
 lr_threshold <- discrete_fdr_d_all_2e %>% 
-#  mutate(population = ifelse(population=="mi","Magnetic Island","North")) %>% 
     group_by(model,population) %>% 
   filter(decoy_ratio<0.10) %>% filter(LR == min(LR)) 
 
 
-# discrete_fdr_d_all_2e %>% group_by(model,population) %>% 
-#   filter(LR>100) %>% summarise(fdr = max(decoy_ratio))
+discrete_fdr_d_all_2e %>% group_by(model,population) %>%
+  filter(LR>100) %>% summarise(fdr = max(decoy_ratio))
 
 ggplot(discrete_fdr_d_all_2e,aes(x=LR)) + 
   geom_line(aes(y=decoy_ratio)) + 
@@ -154,7 +153,7 @@ ggplot(discrete_fdr_d_all_2e,aes(x=LR)) +
   geom_hline(yintercept=0.01) + 
   geom_vline(data = lr_threshold,aes(xintercept = LR),color='red') +
   ylab("False Discovery Rate") +
-  xlab("Sweepfinder CL Threshold") + theme_pubclean() +
+  xlab("Sweepfinder CL Threshold, T") + theme_pubclean() +
   theme(strip.text = element_text(size = 8))
 ```
 

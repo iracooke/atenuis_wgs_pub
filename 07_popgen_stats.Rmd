@@ -1,0 +1,136 @@
+---
+title: "Population genetic statistics with ANGSD"
+output:
+  github_document:
+    pandoc_args: --webtex
+bibliography: bibliography.bib
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+[ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD) [@Korneliussen2014-ah] version 0.928 was used to calculate diversity and neutrality statistics for all populations as follows (also see [06_folded.sh](hpc/angsd/06_folded.sh));
+
+- ANGSD and realSFS were used to calculate folded allele frequency spectra for each population based only on sites called as SNPs by Freebayes and passing the same standard quality filters imposed for all other analyses. This was done from aligned reads for a given population and used the *A. tenuis* reference for the genome and for the ancestral state as recommended [here](https://github.com/ANGSD/angsd/issues/65).
+```bash
+angsd -nThreads 32  -b ${POP}_bamlist.txt -anc $REF -out ${POP}_folded_af \
+     -minMapQ 5 -minQ 20 -GL 1 -doSaf 1 -fold 1 -sites good_sites.txt
+
+	realSFS ${POP}_folded_af.saf.idx -P 24 > ${POP}_folded_af.sfs
+```
+- ANGSD and thetaStat were then used again to calculate diversity and neutrality statistics in overlapping windows (50kb wide with 10kb step) across the genome.
+```bash
+	angsd -nThreads 32  -b ${POP}_bamlist.txt -out ${POP}_folded_af -doThetas 1 -doSaf 1 -pest ${POP}_folded_af.sfs \
+		-minMapQ 5 -minQ 20 -anc $REF -GL 1 -fold 1 -sites good_sites.txt
+
+	thetaStat do_stat ${POP}_folded_af.thetas.idx
+
+	thetaStat do_stat ${POP}_folded_af.thetas.idx -win 50000 -step 10000  -outnames ${POP}_theta.thetasWindow.gz
+```
+- For calculating Fst a similar process was followed but without using the -fold option since this requires an unfolded spectrum (see [here](https://github.com/ANGSD/angsd/issues/65)).  First angsd was used to generate unfolded allele frequency spectra
+```bash
+angsd -nThreads 32  -b ${POP}_bamlist.txt -anc $REF -ref $REF -out ${POP}_af \
+     -minMapQ 5 -minQ 20 -GL 1 -doSaf 1 \
+     -sites good_sites.txt
+```
+- Then realSFS was used to calculate 2D spectra for each pair and subsequently calculate Fst (see [03_allele_freqs.sh](hpc/angsd/03_allele_freqs.sh),  [04_fst.sh](hpc/angsd/04_fst.sh) and [05_fst_windows.sh](hpc/angsd/05_fst_windows.sh))
+- Finally, both Fst and theta's calculations genome-wide were converted to bed format so that regions overlapping sweeps could be found.  For this purpose, overlap with all sweeps (including those likely to be demographic artefacts) was used. Details can be found in [10_sweep_overlaps.sh](hpc/angsd/10_sweep_overlaps.sh)
+
+
+```{r}
+library(tidyverse)
+library(ggrepel)
+library(ggpubr)
+source("R/load.R")
+source("R/constants.R")
+```
+
+
+```{r}
+sample_table <- readxl::read_excel("raw_data/LocationDetails.xlsx")
+```
+
+A boxplot of all Tajima's D values genome-wide shows a clear bias toward positive values for Magnetic Island
+
+```{r}
+read_stats <- function(statsfile){
+  pop=basename(statsfile) %>% str_extract("([^_]+)")
+  read_tsv(statsfile,col_types = cols())[,-1] %>% add_column(location_id=pop)
+}
+
+
+pop_stats <- do.call(rbind,lapply(list.files("hpc/angsd/",pattern = "gz.pestPG",full.names = TRUE),read_stats)) %>% 
+  left_join(sample_table) %>% 
+  mutate(location_name=ifelse(location_id=="north","Northern Reefs",location_name)) %>% 
+  mutate(population=ifelse(location_id=="MI","Magnetic Island","North")) %>% 
+  mutate(location_order = site_order()[location_id])
+```
+
+```{r}
+library(ggpubr)
+ggplot(pop_stats %>% filter(location_id %in% c("MI","north")) ,
+       aes(x=reorder(location_name,location_order),y=Tajima)) + 
+  geom_boxplot(aes(fill=population)) +
+  theme_minimal() +  ylim(c(-2.5,3.5)) +
+  scale_fill_manual(values = c("Magnetic Island"="#FE9929","North"="#3182BD")) +
+    xlab("") + ylab("Tajima's D") + 
+  theme(legend.position = "none",
+        text = element_text(size=24),
+        axis.text.x = element_blank())
+```
+
+
+
+
+A comparison of the distribution of Tajima's D and Fst for the whole genome versus sweeps with scores greater than 100. 
+
+```{r}
+mi_td_sweeps <- read_tsv("hpc/angsd/MI_Tajima_sweeps.tsv", col_names = c("scaffold","start","sweep_score","WinCenter","Tajima")) %>% 
+  add_column(location_id="MI") 
+north_td_sweeps <- read_tsv("hpc/angsd/north_Tajima_sweeps.tsv", col_names = c("scaffold","start","sweep_score","WinCenter","Tajima")) %>% 
+  add_column(location_id="north") 
+
+td_sweeps <- rbind(mi_td_sweeps,north_td_sweeps) %>% 
+  select(Chr="scaffold","WinCenter","location_id","sweep_score") %>% 
+  filter(sweep_score>=100)
+
+mi_north_fst <- read_tsv("hpc/angsd/MI.north.fst_windows.txt",col_names = c("region","Chr","WinCenter","Nsites","Fst"),skip = 1)
+
+pop_stats_with_fst <- mi_north_fst %>% 
+  left_join(pop_stats,by=c("Chr","WinCenter")) %>% 
+  filter(location_id=="north")
+
+#Find the extreme values for Tajima
+
+north_tajima <- pop_stats_with_fst %>% 
+  filter(location_id=="north") %>% 
+  sample_n(10000)
+
+#quantile(north_tajima$Tajima,c(0.01,0.1,0.9,0.99))
+#quantile(north_tajima$Fst,c(0.01,0.1,0.9,0.99))
+```
+
+```{r}
+pop_stats_sweeps <- pop_stats_with_fst %>% 
+  left_join(td_sweeps,by=c("Chr","WinCenter","location_id")) %>% 
+  mutate(in_sweep=ifelse(( !is.na(sweep_score)  ),"Sweep","Background")) %>% 
+  filter(location_id %in% c("north")) %>% 
+  select(location_id,in_sweep,sweep_score,tW,tP,tF,tH,tL,Tajima,fuf,fud,fayh,zeng,Fst) %>% 
+  gather("stat","value",-location_id,-in_sweep,-sweep_score)
+
+fstlim=0.40
+tdlim=-0.91
+threshold_lines <- data.frame(x=c(tdlim,fstlim),xend=c(tdlim,fstlim),y=c(0,0),yend=c(0.7,6),stat=c("Tajima","Fst"))
+
+ggplot(pop_stats_sweeps %>% filter(stat %in% c("Tajima","Fst")) %>% mutate(stat = case_when(stat=="Tajima" ~ "Tajima's D", stat=="Fst" ~ "Fst")) ,aes(x=value)) + 
+  geom_density(aes(fill=in_sweep),alpha=0.5) +
+  facet_wrap(~stat,scales = "free") +
+  theme_pubclean() +
+  xlab("") + ylab("Density") +
+  theme(legend.title = element_blank(), legend.position = c(0.9,0.9)) 
+```
+
+
+

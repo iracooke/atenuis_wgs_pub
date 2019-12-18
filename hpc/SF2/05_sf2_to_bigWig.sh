@@ -1,6 +1,5 @@
-
-#cat aten_final_0.1.fasta | bioawk -c fastx '{print $name,length($seq)}' > aten_chromsizes.txt
-
+# Converts SweepFinder outputs to wig and bigwig format for visualisation with IGV or other genome browsers.
+#
 
 for report in "LR" "alpha";do
 	./sf2_to_wig.sh mi ${report} > mi_${report}.wig 

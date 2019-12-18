@@ -23,3 +23,8 @@ hpc/ms/*.gff
 
 # SF2
 hpc/SF2/*.gff
+
+# angsd
+hpc/angsd/*.txt
+hpc/angsd/*.pestPG
+hpc/angsd/*.tsv
