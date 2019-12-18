@@ -9,4 +9,5 @@ Commands and R code to accompany the paper
 - [Estimating Mutation Rate](02_mutation_rates.md)
 - [Demographic History with MSMC](03_msmc.md)
 - [Demographic History with dadi](04_dadi.md)
+- [Selective Sweep Detection with SweepFinder 2](05_sf2_thresholds)
 
