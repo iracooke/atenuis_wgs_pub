@@ -81,34 +81,39 @@ generate a neutral background for the CLR statistic as follows;
 ## False discovery rate calculation
 
 Assuming that neutral demographic models simulated with `ms` represent
-an accurate background distribution we calculate an empirical false
-discovery rate as follows; 1. Combine sweep loci from real data with
-those obtained under neutral simulations into a single list 2. Sort the
-list by CLR value from lowest to highest 3. For a given threshold value,
-![T](https://latex.codecogs.com/png.latex?T "T") count the number of
-loci in the neutral dataset with
-![CLR\>T](https://latex.codecogs.com/png.latex?CLR%3ET "CLR\>T") and
-call this ![F](https://latex.codecogs.com/png.latex?F "F") (these
-represent false discoveries). Also count the number of real loci with
-![CLR\>T](https://latex.codecogs.com/png.latex?CLR%3ET "CLR\>T") and
-call this ![R](https://latex.codecogs.com/png.latex?R "R"). The false
-discovery rate for a given ![T](https://latex.codecogs.com/png.latex?T
-"T") is then;   
-![FDR\_{T} =
-\\frac{F}{F+R}](https://latex.codecogs.com/png.latex?FDR_%7BT%7D%20%3D%20%5Cfrac%7BF%7D%7BF%2BR%7D
-"FDR_{T} = \\frac{F}{F+R}")  
-4\. The total number of sweep loci will differ slightly between
-simulated and real data but our goal is to compare these datasets purely
-on the shape of their distribution. We therefore apply a correction
-factor ![s =
-\\frac{N\_{real}}{N\_{neutral}}](https://latex.codecogs.com/png.latex?s%20%3D%20%5Cfrac%7BN_%7Breal%7D%7D%7BN_%7Bneutral%7D%7D
-"s = \\frac{N_{real}}{N_{neutral}}") and use ![FDR\_{T corrected}=s
-FDR\_{T}](https://latex.codecogs.com/png.latex?FDR_%7BT%20corrected%7D%3Ds%20FDR_%7BT%7D
-"FDR_{T corrected}=s FDR_{T}"). This will increase the FDR value if the
-real dataset has many more loci above the noise threshold than the
-neutral dataset and vice versa.
+an accurate background distribution we calculated an empirical false
+discovery rate as follows;
+
+  - Combine sweep loci from real data with those obtained under neutral
+    simulations into a single list
+  - Sort the list by CLR value from lowest to highest
+  - For a given threshold value,
+    ![T](https://latex.codecogs.com/png.latex?T "T") count the number of
+    loci in the neutral dataset with
+    ![CLR\>T](https://latex.codecogs.com/png.latex?CLR%3ET "CLR\>T") and
+    call this ![F](https://latex.codecogs.com/png.latex?F "F") (these
+    represent false discoveries). Also count the number of real loci
+    with ![CLR\>T](https://latex.codecogs.com/png.latex?CLR%3ET
+    "CLR\>T") and call this ![R](https://latex.codecogs.com/png.latex?R
+    "R"). The false discovery rate for a given
+    ![T](https://latex.codecogs.com/png.latex?T "T") is then;   
+    ![FDR\_{T} =
+    \\frac{F}{F+R}](https://latex.codecogs.com/png.latex?FDR_%7BT%7D%20%3D%20%5Cfrac%7BF%7D%7BF%2BR%7D
+    "FDR_{T} = \\frac{F}{F+R}")  
+  - The total number of sweep loci will differ slightly between
+    simulated and real data but our goal is to compare these datasets
+    purely on the shape of their distribution. We therefore apply a
+    correction factor ![s =
+    \\frac{N\_{real}}{N\_{neutral}}](https://latex.codecogs.com/png.latex?s%20%3D%20%5Cfrac%7BN_%7Breal%7D%7D%7BN_%7Bneutral%7D%7D
+    "s = \\frac{N_{real}}{N_{neutral}}") and use ![FDR\_{T corrected}=s
+    FDR\_{T}](https://latex.codecogs.com/png.latex?FDR_%7BT%20corrected%7D%3Ds%20FDR_%7BT%7D
+    "FDR_{T corrected}=s FDR_{T}"). This will increase the FDR value if
+    the real dataset has many more loci above the noise threshold than
+    the neutral dataset and vice versa.
 
 This leads to the following false discovery rates for various neutral
 models for the Magnetic Island and Northern populations respectively.
+Red vertical lines represent CLR threshold values for which the FDR
+reaches 10%.
 
 ![](05_sf2_thresholds_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->

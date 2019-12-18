@@ -43,12 +43,14 @@ Once ms commands had been generated for all models they were used to generate a 
 
 ## False discovery rate calculation
 
-Assuming that neutral demographic models simulated with `ms` represent an accurate background distribution we calculate an empirical false discovery rate as follows; 
-1. Combine sweep loci from real data with those obtained under neutral simulations into a single list
-2. Sort the list by CLR value from lowest to highest
-3. For a given threshold value, $T$ count the number of loci in the neutral dataset with $CLR>T$ and call this $F$ (these represent false discoveries). Also count the number of real loci with $CLR>T$ and call this $R$.  The false discovery rate for a given $T$ is then;
+Assuming that neutral demographic models simulated with `ms` represent an accurate background distribution we calculated an empirical false discovery rate as follows; 
+
+- Combine sweep loci from real data with those obtained under neutral simulations into a single list
+- Sort the list by CLR value from lowest to highest
+- For a given threshold value, $T$ count the number of loci in the neutral dataset with $CLR>T$ and call this $F$ (these represent false discoveries). Also count the number of real loci with $CLR>T$ and call this $R$.  The false discovery rate for a given $T$ is then;
 $$FDR_{T} = \frac{F}{F+R}$$
-4. The total number of sweep loci will differ slightly between simulated and real data but our goal is to compare these datasets purely on the shape of their distribution.  We therefore apply a correction factor $s = \frac{N_{real}}{N_{neutral}}$ and use $FDR_{T corrected}=s FDR_{T}$. This will increase the FDR value if the real dataset has many more loci above the noise threshold than the neutral dataset and vice versa. 
+- The total number of sweep loci will differ slightly between simulated and real data but our goal is to compare these datasets purely on the shape of their distribution.  We therefore apply a correction factor $s = \frac{N_{real}}{N_{neutral}}$ and use $FDR_{T corrected}=s FDR_{T}$. This will increase the FDR value if the real dataset has many more loci above the noise threshold than the neutral dataset and vice versa. 
+
 ```{r}
 read_ms_twopop_sweeps <- function(model){
   mpath <- paste("hpc/ms/ms_",model,"_mi_10_sweeps.gff",sep="")
@@ -119,7 +121,7 @@ discrete_sweeps_fdr <- calc_fdr("asym_mig",discrete_sweeps)
 discrete_fdr_d_all <- do.call(rbind,lapply(c("msmc",models),calc_fdr,discrete_sweeps))
 ```
 
-This leads to the following false discovery rates for various neutral models for the Magnetic Island and Northern populations respectively.
+This leads to the following false discovery rates for various neutral models for the Magnetic Island and Northern populations respectively. Red vertical lines represent CLR threshold values for which the FDR reaches 10%.
 
 ```{r}
 library(ggpubr)
@@ -153,7 +155,7 @@ ggplot(discrete_fdr_d_all_2e,aes(x=LR)) +
   geom_vline(data = lr_threshold,aes(xintercept = LR),color='red') +
   ylab("False Discovery Rate") +
   xlab("Sweepfinder CL Threshold") + theme_pubclean() +
-  theme(strip.text = element_text(size = 6))
+  theme(strip.text = element_text(size = 8))
 ```
 
 
