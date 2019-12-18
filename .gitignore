@@ -28,3 +28,6 @@ hpc/SF2/*.gff
 hpc/angsd/*.txt
 hpc/angsd/*.pestPG
 hpc/angsd/*.tsv
+
+# symbiodinium_profiles
+hpc/symbiodinium_profiles/genome_kraken_mpa
