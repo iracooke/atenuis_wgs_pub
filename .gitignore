@@ -14,3 +14,12 @@ hpc/msmc/bootstrap_results
 # dadi
 hpc/dadi/optim
 hpc/dadi/dadi.thin1k.txt
+hpc/dadi/seedms
+hpc/dadi/test.msout
+
+
+# ms
+hpc/ms/*.gff
+
+# SF2
+hpc/SF2/*.gff

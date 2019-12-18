@@ -1,5 +1,5 @@
 ---
-title: "dadi Analysis"
+title: "Demographic History with dadi"
 output:
   github_document:
     pandoc_args: --webtex

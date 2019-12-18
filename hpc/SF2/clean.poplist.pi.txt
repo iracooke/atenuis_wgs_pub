@@ -1,0 +1,31 @@
+BEGIN
+PI-1-14	nomi
+PI-2-25	nomi
+PI-1-29	nomi
+PI-1-25	nomi
+PI-2-16	nomi
+PI-1-17	nomi
+PI-2-15	nomi
+PI-2-26	nomi
+PI-1-22	nomi
+PI-2-2	nomi
+PI-1-10	nomi
+PI-1-24	nomi
+PI-2-29	nomi
+PI-2-7	nomi
+PI-2-12	nomi
+PI-2-17	nomi
+PI-1-20	nomi
+PI-2-23	nomi
+PI-2-22	nomi
+PI-1-27	nomi
+PI-2-24	nomi
+PI-1-3	nomi
+PI-1-1	nomi
+PI-1-4	nomi
+PI-2-20	nomi
+PI-1-5	nomi
+PI-2-14	nomi
+PI-1-2	nomi
+PI-2-4	nomi
+END

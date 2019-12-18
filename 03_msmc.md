@@ -42,3 +42,6 @@ mutation rate of 1.86e-08 (see
 of 5 years. The inferred population history is shown below.
 
 ![](03_msmc_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+Write out the bootstrap averaged data in msmc format for ms analysis
+(see [05\_sf2\_thresholds.md](05_sf2_thresholds.md))

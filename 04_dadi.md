@@ -1,4 +1,4 @@
-dadi Analysis
+Demographic History with dadi
 ================
 
 We modelled demographic histories for Magnetic Island and Northern
@@ -49,7 +49,9 @@ vcf2dadi.py -p clean.poplist.txt dadi_filtered_mac2_thin.recode.vcf --max-dev 0.
 
 The options `--max-dev 0.5` and `--min-call 0.5` ensure that sites low
 call ratios, and those with highly divergent call ratios between MI and
-Northern Populations are excluded.
+Northern Populations are excluded. Since we did not have a closely
+related genome (closest is \> 10Mya) we could not deduce the ancestral
+state and therefore used folded SFS for all analyses.
 
 To ensure that model fitting was able to adequately explore parameter
 space we used modified versions of dadi optimisation scripts obtained
@@ -69,7 +71,8 @@ projection was 15507.
 
 Model fit was visually checked by plotting residuals using the script
 [residuals.py](hpc/dadi/residuals.py). Residuals for the best fitting
-model `isolation_asym_mig` is shown below;
+model `isolation_asym_mig` is shown below. All other residuals plots can
+be found in the folder `hpc/dadi/residuals`.
 
 ![](hpc/dadi/residuals/isolation_asym_mig.png)<!-- -->
 
@@ -129,7 +132,7 @@ values for the Magnetic Island / North divergence time at around
 
 ![](04_dadi_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
-All models showed a biased migration rate from North to south. Given the
+All models showed a biased migration rate from North to South. Given the
 large discrepancy in effective population sizes between these
 populations this could primarily be driven by population size. This is
 because the migration rate is measured in terms of the proportion of

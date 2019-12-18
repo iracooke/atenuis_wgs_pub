@@ -1,0 +1,32 @@
+BEGIN
+FI-2-8	nomi
+FI-2-9	nomi
+FI-2-10	nomi
+FI-1-16	nomi
+FI-1-10	nomi
+FI-2-21	nomi
+FI-2-25	nomi
+FI-2-19	nomi
+FI-1-26	nomi
+FI-2-23	nomi
+FI-2-29	nomi
+FI-1-24	nomi
+FI-1-30	nomi
+FI-1-14	nomi
+FI-2-2	nomi
+FI-2-30	nomi
+FI-1-1	nomi
+FI-1-4	nomi
+FI-2-14	nomi
+FI-1-3	nomi
+FI-2-13	nomi
+FI-1-27	nomi
+FI-1-5	nomi
+FI-1-13	nomi
+FI-2-27	nomi
+FI-1-21	nomi
+FI-2-5	nomi
+FI-2-6	nomi
+FI-1-18	nomi
+FI-1-12	nomi
+END

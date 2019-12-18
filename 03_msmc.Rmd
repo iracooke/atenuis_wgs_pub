@@ -86,5 +86,12 @@ ggplot(bs_data_gbr,aes(x=left_time_boundary/mu*gen,y=(1/lambda)/mu)) +
   theme(text=element_text(size=20), legend.title = element_blank())
 ```
 
+Finally we write out the bootstrap averaged data in msmc format for later us in simulating data under these demographic histories. (See [05_sf2_thresholds.md](05_sf2_thresholds.md))
 
-
+```{r}
+for (p in c('MI','FI')){
+  outfile <- paste("hpc/ms/msmc_av_",p,".txt",sep = "")
+  pop_data <- bs_data_av %>% ungroup %>% filter(pop==p) %>% select(-pop) %>% as.data.frame()
+  write_tsv(path = outfile,pop_data) 
+}
+```
