@@ -220,8 +220,6 @@ Sweep loci unique to either Marine or Plume were used to extract overlapping gen
 bedtools_mvsp_cols <- c(paste('gene',gff_cols,sep="_"),
                         paste('sweep',gff_cols[c(1,4,5,6)],sep="_"))
 
-read_table2("hpc/SF2/marine_only_sweep_genes.gff",col_names = bedtools_mvsp_cols,col_types = cols()) %>% head()
-
 mo_sweep_genes <- read_table2("hpc/SF2/marine_only_sweep_genes.gff",col_names = bedtools_mvsp_cols,col_types = cols()) %>% 
   dplyr::arrange(dplyr::desc(sweep_score)) %>% 
   dplyr::mutate(geneid = str_match(gene_attributes,pattern = "ID=([^;]+)")[,2]) %>% 

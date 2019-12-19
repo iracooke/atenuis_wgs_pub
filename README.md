@@ -6,6 +6,14 @@ Commands and R code to accompany the paper
 
 ### Raw Data Processing
 
+- [Read Alignment and Preprocessing](hpc/gatk3/README.md)
+- [Variant calling](hpc/freebayes/README.md)
+- [Variant filtering](hpc/freebayes_qc/README.md)
+- [Host mitochondrial genome assembly](hpc/mitogenome/README.md)
+- [Host mitochondrial haplotype network](hpc/mito_mapping/README.md)
+- [Mitochondrial haplotype networks for symbionts](hpc/symbiodinium/README.md)
+
+
 ### Downstream Analysis and Plots
 
 All of the following sections are provided as processed markdown files.  Clicking the link should display a web readable page with text, a few select commands and plots and tables. The code used to generate these pages is provided in the corresponding `.Rmd` file. If you would like to run the code in these files yourself you will need to;
@@ -16,7 +24,7 @@ All of the following sections are provided as processed markdown files.  Clickin
 wget something
 tar -zxvf something
 ```
-3. Open the project file `atenuis_wgs_pub.Rproj` in RStudio and open the desired file (eg 01_population_structure.Rmd).  After installing any require R packages the code should run and produce plots and tables identical to those shown on the corresponding web link below.
+3. Open the project file `atenuis_wgs_pub.Rproj` in RStudio and open the desired file (eg 01_population_structure.Rmd).  After installing any required R packages the code should run and produce plots and tables identical to those shown on the corresponding web link below.
 
 - [Population Structure](01_population_structure.md) : Rmd file [01_population_structure.Rmd](01_population_structure.Rmd)
 - [Estimating Mutation Rate](02_mutation_rates.md) : Rmd file [02_mutation_rates.Rmd](02_mutation_rates.Rmd)
