@@ -20,11 +20,11 @@ tar -zxvf something
 
 - [Population Structure](01_population_structure.md) : Rmd file [01_population_structure.Rmd](01_population_structure.Rmd)
 - [Estimating Mutation Rate](02_mutation_rates.md) : Rmd file [02_mutation_rates.Rmd](02_mutation_rates.Rmd)
-- [Demographic History with MSMC](03_msmc.md)
-- [Demographic History with dadi](04_dadi.md)
-- [Selective Sweep Detection with SweepFinder 2](05_sf2_thresholds.md)
-- [Interpretation of SweepFinder results](06_sf2.md)
-- [Neutrality and Diversity statistics with ANGSD](07_popgen_stats.md)
-- [Symbiont Profiles with kraken](08_metagenome.md)
-- [Analysis of interspersed repeats](09_repeats.md)
+- [Demographic History with MSMC](03_msmc.md) : Rmd file [03_msmc.Rmd](03_msmc.Rmd)
+- [Demographic History with dadi](04_dadi.md) : Rmd file [04_dadi.Rmd](04_dadi.Rmd)
+- [Selective Sweep Detection with SweepFinder 2](05_sf2_thresholds.md) : Rmd file [05_sf2_thresholds.Rmd](05_sf2_thresholds.Rmd)
+- [Interpretation of SweepFinder results](06_sf2.md) : Rmd file [06_sf2.Rmd](06_sf2.Rmd)
+- [Neutrality and Diversity statistics with ANGSD](07_popgen_stats.md) : Rmd file [07_popgen_stats.Rmd](07_popgen_stats.Rmd)
+- [Symbiont Profiles with kraken](08_metagenome.md) : Rmd file [(08_metagenome.Rmd)](08_metagenome.Rmd)
+- [Analysis of interspersed repeats](09_repeats.md) : Rmd file [(09_repeats.Rmd)](09_repeats.Rmd)
 
