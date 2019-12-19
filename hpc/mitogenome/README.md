@@ -8,5 +8,7 @@ The *A. digitifera* mitogenome was used as a bait. Each round MITObim assembles 
 
 MITObim finished after 7 rounds resulting in a single contig of 19029bp. Manual inspection of this sequence revealed that it contained overlapping ends and could be circularised resulting in a final sequence of length 18338bp.  This is very close to the reference *A. tenuis* mitogenome on genbank (NC_022830) but includes some additional sequence in the putative control region.  
 
+An alignment of NC_022830 and our mitogenome assembly is shown below for the putative control region.  In other regions the sequences are almost identical.
+
 ![alignment_control_region](../../figures/Aten_mitogenome_align_control.png)
 
