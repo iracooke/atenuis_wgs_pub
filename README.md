@@ -1,6 +1,6 @@
 # Genetics of *Acropora tenuis* on the GBR using shallow whole genome resequencing
 
-Commands and R code to accompany the paper
+Shell scripts and R code to accompany the paper
 
 > Signatures of selection in the Acropora tenuis holobiont reveal complex adaptations to inshore environments driven by Holocene climate change
 
