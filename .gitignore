@@ -1,6 +1,7 @@
 .Rproj.user
 .Rhistory
-
+data.tgz
+data.list
 # raw_data
 raw_data/~*
 raw_data/annotation_table.tsv
@@ -38,4 +39,5 @@ hpc/repeats/
 
 
 # symbiont_mito
-hpc/symbiodinium/*.fasta
+hpc/symbiodinium/AllSymbC1MitoConsensus_GoodCoverage.fasta     
+hpc/symbiodinium/AllSymbC1MitoConsensus_GoodCoverageTrim.fasta
