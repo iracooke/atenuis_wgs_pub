@@ -1,0 +1,101 @@
+---
+title: "Repetitive Elements in Acroporid Genomes"
+output:
+  github_document:
+    pandoc_args: --webtex
+bibliography: bibliography.bib
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+```{r echo=FALSE}
+library(tidyverse)
+library(ggpubr)
+source("R/constants.R")
+```
+
+Repeat content was analysed for the following Acroporid genomes;
+
+- *Acropora millepora* from short reads (`amil`) [@Ying2019-qn]
+- *Acropora millepora* from long reads (`amilv2`) obtained from [https://przeworskilab.com/data/](https://przeworskilab.com/data/)
+- *Acropora tenuis* this paper (`aten`)
+- *Acropora digitifera* version 1.1 from short reads (`adi`) obtained from genbank [@Shinzato2011-em]
+
+Each of these genomes was scanned for repeats as follows (using `amil.fasta` as an example genome);
+
+1. [RepeatModeller](http://www.repeatmasker.org/RepeatModeler/) version 1.0.8 was used to discover repeats
+```bash
+BuildDatabase amil.fasta -name amil
+RepeatModeler-1.0.8 -database amil -engine ncbi -pa 10
+```
+2. [RepeatMasker](http://www.repeatmasker.org/) version 4.0.7 was run using the database of repeats (`amil-families.fa`, output from step 1) identified with RepeatModeller as follows;(`-a` option to writes alignments to a file)
+```bash
+mkdir -p amil_repeat_masker_out
+RepeatMasker -pa 40 \
+	-xsmall \
+	-a -gff \
+	-lib amil-families.fa \
+	-dir amil_repeat_masker_out \
+	-e ncbi \
+	amil.fasta
+```
+3. The script `calcDivergenceFromAlign.pl` included with RepeatMasker was used to calculate divergences from alignments created in step 2.
+
+For each genome this process produces a file with extension `.align.divsum` which includes weighted average Kimura divergences for each repeat family.  Assuming that individual copies within a family diverge neutrally at a constant rate these divergences are a proxy for the age of the family. 
+
+```{r}
+amil_divsum <- read_tsv("hpc/repeats/amil/amil_sf_1.1.fasta.align.divsum", skip = 6,n_max = 2880,
+                        col_names = c("Class","Repeat","absLen","wellCharLen","Kimura"), na = "----", col_types = cols()) %>% add_column(species="amil")
+
+amilv2_divsum <- read_tsv("hpc/repeats/amil/Amil.v2.01.chrs.fasta.align.divsum", skip = 6,n_max = 2964,
+                        col_names = c("Class","Repeat","absLen","wellCharLen","Kimura"), na = "----", col_types = cols()) %>% add_column(species="amil2")
+
+aten_divsum <- read_tsv("hpc/repeats/aten/aten_final_0.11.fasta.align.divsum", skip = 6,n_max = 2981,
+                        col_names = c("Class","Repeat","absLen","wellCharLen","Kimura"), na = "----", col_types = cols()) %>% add_column(species="aten")
+
+adi_divsum <- read_tsv("hpc/repeats/adi/GCF_000222465.1_Adig_1.1_genomic.fna.align.divsum", skip = 6,n_max = 2908,
+                        col_names = c("Class","Repeat","absLen","wellCharLen","Kimura"), na = "----", col_types = cols()) %>% add_column(species="adi")
+
+divsum <- rbind(amil_divsum,aten_divsum,adi_divsum,amilv2_divsum) %>% 
+  mutate(length_class = cut(absLen, breaks = c(0,10000,100000,5e6),include.lowest=TRUE, right=FALSE)) %>% 
+  mutate(broad_class = str_extract(Class,"([^\\/]+)")) %>% 
+  group_by(species,Class) %>% 
+  mutate(genome_percent = sum(absLen)/6e6) %>% 
+  ungroup() 
+```
+
+A broad overview of major repeat classes indicates that the overall composition of repeats is largely unchanged across Acroporid genomes.  Unknown repeats comprise a large fraction of elements.  One interesting pattern is that genomes from long reads (`amil2`, `aten`) seem to have higher counts of long repeats (longer than 100kb) which likely reflects improved ability to assemble these. In the figure below columns divide data by repeat length and rows represent the genomes (see above for genome codes)
+
+```{r, fig.cap=""}
+divsum_plot <- divsum %>% 
+  filter(Kimura>0) %>% 
+  mutate(broad_class = ifelse(broad_class=="#Unknown","Unknown",broad_class)) %>% 
+  mutate(broad_class = ifelse(broad_class=="SINE?","SINE",broad_class)) 
+
+ggplot(divsum_plot ,aes(x=Kimura)) + 
+  geom_histogram(binwidth = 2,aes(fill=broad_class)) + 
+  facet_grid(species~length_class) +
+  theme_pubr() + theme(legend.position = "right") +
+  theme(legend.title = element_blank()) + 
+  xlim(0,40)
+```
+
+Looking in detail at major classes of repeats we see that the `amil2` assembly includes some very recent snRNA repeats that are not present in `aten`.  Since these are recent they could represent features that have arisen since the split with *A. tenuis*
+
+```{r}
+divsum_plot_recent <- divsum_plot %>% 
+  filter(Kimura>0) %>% 
+  unite("species_class",broad_class,species, remove = FALSE)
+
+ggplot(divsum_plot_recent %>% filter(!(broad_class %in% c("RNA","rRNA"))) ,aes(x=Kimura)) + 
+  geom_density(aes(fill=broad_class)) +   
+  theme(legend.position = "bottom") + 
+  facet_grid(species~broad_class) + xlim(0,40) +
+  theme_pubr() + theme(legend.title = element_blank(), legend.position = "right") + theme(axis.text.x = element_text(angle = 90,size=6))
+```
+
+

@@ -31,3 +31,6 @@ hpc/angsd/*.tsv
 
 # symbiodinium_profiles
 hpc/symbiodinium_profiles/genome_kraken_mpa
+
+# repeats
+hpc/repeats/

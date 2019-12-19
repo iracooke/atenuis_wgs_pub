@@ -12,3 +12,5 @@ Commands and R code to accompany the paper
 - [Selective Sweep Detection with SweepFinder 2](05_sf2_thresholds.md)
 - [Neutrality and Diversity statistics with ANGSD](07_popgen_stats.md)
 - [Symbiont Profiles with kraken](08_metagenome.md)
+- [Analysis of interspersed repeats](09_repeats.md)
+
