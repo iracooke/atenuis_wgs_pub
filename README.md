@@ -24,7 +24,7 @@ All of the following sections are provided as processed markdown files.  Clickin
 wget something
 tar -zxvf something
 ```
-3. Open the project file `atenuis_wgs_pub.Rproj` in RStudio and open the desired file (eg 01_population_structure.Rmd).  After installing any required R packages the code should run and produce plots and tables identical to those shown on the corresponding web link below.
+3. Open the project file `atenuis_wgs_pub.Rproj` in RStudio and open the desired file (eg 01_population_structure.Rmd).  After installing any required R packages the code should run and produce plots and tables identical to those shown in the web links below.
 
 - [Population Structure](01_population_structure.md) : Rmd file [01_population_structure.Rmd](01_population_structure.Rmd)
 - [Estimating Mutation Rate](02_mutation_rates.md) : Rmd file [02_mutation_rates.Rmd](02_mutation_rates.Rmd)
