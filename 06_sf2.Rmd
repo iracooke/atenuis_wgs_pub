@@ -1,0 +1,217 @@
+---
+title: "Interpretation of SweepFinder results"
+output:
+  github_document:
+    pandoc_args: --webtex
+bibliography: bibliography.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+library(tidyverse)
+library(ggpubr)
+source("R/constants.R")
+```
+
+Due to the extreme demographic history of Magnetic Island we found that it was not possible to distinguish selective sweeps from demographic effects in that location.  Consequently our interpretation of SweepFinder results is restricted to Northern reefs.  We examined loci with significant sweep scores in two ways.  Firstly we looked at the entire Northern population as a whole for which sweeps could be interpreted as being due to adaptations required across all inshore sites.  Secondly we looked at the difference between Marine (Fitzroy Island, Pelorus Island) and Plume (Pandora Reef, Dunk Island) sites. Sweeps designated as `Marine Only` or `Plume Only` were identified using bedtools (see [11_marine_vs_plume.sh](hpc/SF2/11_marine_vs_plume.sh) ). This produced the following files;
+
+- `nomi_10_sweeps.gff` containing contiguous regions with SweepFinder scores > 10 using pooled allele frequencies across all northern reefs.
+- `marine_only.gff` containing contiguous regions with SweepFinder scores > 10 that were in marine sites and not in plume
+- `plume_only.gff` containing contiguous regions with SweepFinder scores > 10 that were in plume sites and not in marine
+
+```{r}
+scaff_sizes <- read_tsv("hpc/SF2/aten_chromsizes.txt",col_names = c("scaffold","scaffold_length"))
+scaff_offset <- scaff_sizes %>% 
+  mutate(offset = order_by(desc(scaffold_length),cumsum(scaffold_length))) %>% 
+  mutate(scaff_type = as.integer(row_number() %% 2) )
+
+gff_cols <- c('scaffold','source','feature','start','end','score','strand','phase','attributes')
+sweeps <- read_tsv("hpc/SF2/nomi_10_sweeps.gff",col_names = gff_cols,col_types = cols()) %>% 
+  mutate(length = end-start) %>% 
+  left_join(scaff_offset) %>% 
+  mutate(xpos = start + offset) %>% 
+  unite(col = 'sweep_id',scaffold,start,sep = "_",remove = FALSE)
+
+mo_sweeps <- read_tsv("hpc/SF2/marine_only.gff",col_names = gff_cols[c(1,4,5,6)],col_types = cols()) %>% 
+  mutate(length = end-start) %>% 
+  left_join(scaff_offset) %>% 
+  mutate(xpos = start + offset) %>% 
+  unite(col = 'sweep_id', scaffold, start, sep = "_", remove = FALSE)
+
+po_sweeps <- read_tsv("hpc/SF2/plume_only.gff",col_names = gff_cols[c(1,4,5,6)],col_types = cols()) %>% 
+  mutate(length = end-start) %>% 
+  left_join(scaff_offset) %>% 
+  mutate(xpos = start + offset) %>% 
+  unite(col = 'sweep_id', scaffold, start, sep = "_", remove = FALSE)
+```
+
+Using the best fitting dadi model (`isolation_asym_mig`) as neutral background a CLR threshold of 100 gives an FDR of approximately 10%.  The Manhattan plot below shows that these sites are distributed across the genome. 
+
+```{r}
+ggplot(sweeps,aes(x=xpos)) + 
+  geom_point(aes(y=score,color=scaff_type),size=0.1) +
+  geom_point(data=sweeps %>% filter(score>100),aes(y=score),color="red") +
+  theme_pubr() + 
+  theme(legend.position = "none") + xlab("Genome Position") + ylab("SweepFinder 2 CLR Statistic")
+```
+
+```{r}
+all_significant <- sweeps %>% filter(score>100)
+```
+
+
+```{r}
+# Load table of overlaps between sweeps and genes at the chosen threshold
+bedtools_cols <- paste('gene',c('scaffold','source','feature','start','end','score','strand','phase','attributes'),sep = "_")
+bedtools_cols <- c(bedtools_cols,paste('sweep',c('scaffold','source','feature','start','end','score','strand','phase','attributes'),sep = "_"))
+
+nomi_sweep_genes <- read_table2("hpc/SF2/nomi_10_sweep_genes.gff",col_names = bedtools_cols,col_types = cols()) %>% 
+  arrange(desc(sweep_score)) %>% 
+  mutate(geneid = str_match(gene_attributes,pattern = "ID=([^;]+)")[,2]) %>% 
+  left_join(scaff_offset, by=c("sweep_scaffold"="scaffold")) %>% 
+  mutate(xpos = sweep_start + offset) %>% 
+  rename(score=sweep_score) %>% 
+  unite(col = 'sweep_id',sweep_scaffold,sweep_start,sep = "_")
+```
+
+
+```{r}
+# Attach popgen stats to sweeps
+#
+# Popgen stat
+tajima_stats <- read_tsv("hpc/angsd/north_Tajima_sweeps.tsv",col_names = c("scaffold","start","sweep_score","WinCenter","Tajima")) %>% 
+  unite(col='sweep_id',scaffold,start,sep="_",remove = TRUE) %>% select(-WinCenter,-sweep_score) %>% 
+  group_by(sweep_id) %>% 
+  summarise(Tajima=mean(Tajima))
+
+fst_stats <- read_tsv("hpc/angsd/MI.north_Fst_sweeps.tsv",col_names = c("scaffold","start","sweep_score","WinCenter","Fst")) %>% 
+  unite(col='sweep_id',scaffold,start,sep="_",remove = TRUE) %>% select(-WinCenter,-sweep_score) %>% 
+  group_by(sweep_id) %>% 
+  summarise(Fst=mean(Fst))
+
+nomi_sweep_genes_td <- nomi_sweep_genes %>% 
+  left_join(tajima_stats, by='sweep_id') %>% 
+  left_join(fst_stats, by="sweep_id")
+```
+
+
+```{r}
+# Read in annotation information
+# Gene annotations
+annotations <- read_tsv("raw_data/annotation_table.tsv", col_types = cols()) %>% 
+  mutate(gene_id = str_remove(aten_id,".m1$")) 
+
+# Attach annotations to sweep genes
+
+annotated_sweep_genes <- nomi_sweep_genes_td %>% left_join(annotations, by=c('geneid'='gene_id')) %>% 
+  group_by(geneid) %>% 
+  top_n(1,score)
+```
+
+
+```{r}
+# Sort and print key columns
+sweep_genes_summary <- annotated_sweep_genes %>% 
+  dplyr::select(sweep_id,geneid,score,Tajima,Fst,evalue,saccver,method,kegg,protein_name=`Protein names`,gene_name=`Gene names`,GO=ipr_go) %>% 
+  arrange(desc(score)) %>% 
+  filter(score>100) 
+
+# This forms the basis of the initial gene list prior to filtering for Fst
+#
+#write_tsv(sweep_genes_summary,path = "results/sweep_genes_summary.tsv")
+```
+
+Genes associated with these significant loci were identified using [bedtools window](https://bedtools.readthedocs.io/en/latest/content/tools/window.html).  This reports all overlaps between sweep loci (encoded as `nomi_10_sweeps.gff` and gene models). (see [07_genes_in_sweeps.sh](hpc/SF2/07_genes_in_sweeps.sh) for details).  A hand annotated version of this table is included as supplementary information with the paper. 
+
+
+```{r}
+library(topGO)
+
+gostring2vector <- function(gostring){
+   str_split(gostring,";")[[1]] %>% str_trim()
+}
+
+gene_ids <- annotations$gene_id
+gostrings <- annotations$ipr_go
+
+geneID2GO <- lapply(gostrings,gostring2vector)
+names(geneID2GO) <- gene_ids
+```
+
+
+```{r}
+get_enrichment <- function(onto,thresh=100){
+    sweep_genes <- annotated_sweep_genes %>% 
+      filter(score>thresh) %>% pull(geneid) %>% unique()
+    target_list_membership <- factor(as.integer(gene_ids %in% sweep_genes))
+    names(target_list_membership) <- gene_ids
+    
+    GOdata <- new("topGOdata", 
+                  ontology = onto, 
+                  allGenes = target_list_membership, 
+                  annot = annFUN.gene2GO, 
+                  gene2GO = geneID2GO,
+                  nodeSize = 5) 
+    
+    # This runs the test to see if there are significantly enriched GO terms
+    resultFis <- runTest(GOdata, algorithm = "weight01", statistic = "fisher")
+    
+    gt <- GenTable(GOdata, classic = resultFis,orderBy = "weight", ranksOf = "classic", topNodes = 50)
+    list(godata = GOdata, result = resultFis, table = gt)
+}
+```
+
+```{r}
+# This can be BP (Biological Process), MF (Molecular Function), CC (Cellular Compartment)
+bp_topgo <- get_enrichment("BP")
+mf_topgo <- get_enrichment("MF")
+cc_topgo <- get_enrichment("CC")
+
+bp_table <- bp_topgo$table
+mf_table <- mf_topgo$table
+cc_table <- cc_topgo$table
+
+all_ontologies <- rbind(bp_table %>% add_column(ontology="BP"),
+                        mf_table %>% add_column(ontology="MF"),
+                        cc_table %>% add_column(ontology="CC")) %>% 
+  filter(Significant>1)
+#write_tsv(all_ontologies,"results/significant_go_terms.tsv")
+```
+
+Gene Ontology annotations were obtained for these genes through GO terms assigned to conserved domains (via Interproscan) and the results were used to search for terms that might be enriched in the sweep set compared to background. GO term enrichment analysis was done using the R package topGO version 2.36.0 [@Alexa2006-wf] using genes associated with sweeps (scores > 100) as the target set and all other annotated genes as background.  topGO uses a weighting scheme (we used the weight01 scheme) to downweight genes that are also attached to related terms in the GO graph. Significance testing was performed using Fisher's exact test based on weighted gene counts.  As outlined  [in the topGO manual](https://bioconductor.org/packages/release/bioc/vignettes/topGO/inst/doc/topGO.pdf)) there is no clear way to apply a formal multiple-testing corrections for this p-value.  
+
+A single GO term, `GO:0005509 calcium ion binding` was significantly enriched among sweep genes. This term was associated with SOMPs as well as EGF domain containing genes, both of which were abundant in the target set.
+
+```{r}
+all_ontologies_sig <- all_ontologies %>% filter(as.numeric(classic)<0.01)
+knitr::kable(all_ontologies_sig)
+```
+
+
+```{r}
+gene_go_map <- sweep_genes_summary %>% dplyr::select(geneid,GO) %>% splitstackshape::cSplit("GO",sep=";",direction = "long") %>% mutate(GO=str_trim(GO))
+
+
+significant_go_terms <- all_ontologies %>% filter(as.numeric(classic)<0.01) %>% filter(Significant>1) %>% pull(GO.ID)
+genes_in_significant_go_terms <- gene_go_map %>% filter(GO %in% significant_go_terms) %>% pull(geneid) %>% unique()
+
+annotated_go_significant_genes <- annotated_sweep_genes %>% filter(geneid %in% genes_in_significant_go_terms) %>% 
+  dplyr::select(sweep_id,geneid,score,evalue,saccver,method,kegg,protein_name=`Protein names`,gene_name=`Gene names`,GO=`Gene ontology IDs`) %>% 
+  arrange(desc(score))
+#write_tsv(annotated_go_significant_genes,path = "results/annotated_go_significant_genes.tsv")
+```
+
+Genes annotated with the GO term `GO:0005509 calcium ion binding`.
+
+```{r}
+display_genes <- annotated_go_significant_genes %>% dplyr::select(geneid,CLR=score,UniprotID = saccver,`Protein Name`=protein_name)
+
+knitr::kable(display_genes)
+```
+
+
+
+
+
+

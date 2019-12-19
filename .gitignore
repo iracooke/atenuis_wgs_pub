@@ -3,6 +3,7 @@
 
 # raw_data
 raw_data/~*
+raw_data/annotation_table.tsv
 
 # NGSADdmix
 hpc/NGSadmix/accelerate_fb_pcangst_2.K2.a625.0.qopt
@@ -34,3 +35,5 @@ hpc/symbiodinium_profiles/genome_kraken_mpa
 
 # repeats
 hpc/repeats/
+
+
