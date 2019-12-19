@@ -61,10 +61,10 @@ genome codes)
 
 ![](09_repeats_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-Looking in detail at major classes of repeats we see that the `amil2`
-assembly includes some very recent snRNA repeats that are not present in
-`aten`. Since these are recent they could represent features that have
-arisen since the split with *A. tenuis*
+Unknown repeats dominate this plot so we eliminate those in the next
+plot in order looking in detail at major classes of known repeats. There
+are very few noticeable changes at this level suggesting that the broad
+repeat composition is relatively invariant across Acroporid genomes.
 
 ![](09_repeats_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 

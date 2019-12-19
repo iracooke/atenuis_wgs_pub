@@ -84,15 +84,16 @@ ggplot(divsum_plot ,aes(x=Kimura)) +
   xlim(0,40)
 ```
 
-Looking in detail at major classes of repeats we see that the `amil2` assembly includes some very recent snRNA repeats that are not present in `aten`.  Since these are recent they could represent features that have arisen since the split with *A. tenuis*
+Unknown repeats dominate this plot so we eliminate those in the next plot in order looking in detail at major classes of known repeats.  There are very few noticeable changes at this level suggesting that the broad repeat composition is relatively invariant across Acroporid genomes. 
 
 ```{r}
 divsum_plot_recent <- divsum_plot %>% 
   filter(Kimura>0) %>% 
   unite("species_class",broad_class,species, remove = FALSE)
 
-ggplot(divsum_plot_recent %>% filter(!(broad_class %in% c("RNA","rRNA"))) ,aes(x=Kimura)) + 
-  geom_density(aes(fill=broad_class)) +   
+ggplot(divsum_plot_recent %>% filter(!(broad_class %in% c("RNA","rRNA","Unknown"))) ,aes(x=Kimura)) + 
+  geom_histogram(aes(fill=broad_class), binwidth = 2)+
+#  geom_density(aes(fill=broad_class)) +   
   theme(legend.position = "bottom") + 
   facet_grid(species~broad_class) + xlim(0,40) +
   theme_pubr() + theme(legend.title = element_blank(), legend.position = "right") + theme(axis.text.x = element_text(angle = 90,size=6))
