@@ -2,7 +2,7 @@
 
 Variants were called for all 146 low coverage samples and 2 high coverage samples downsampled to 3x. All sample names are listed in the file [lowcov_down_bams.txt](hpc/freebayes/lowcov_down_bams.txt). See [here](../gatk3/README.md) for details of preprocessing and read alignment for these samples.
 
-To facilitate rapid variant calling we divided the *A. tenuis* genome into 100kb regions `fasta_generate_regions.py` script provided with freebayes version 1.1.1
+To facilitate rapid variant calling we divided the *A. tenuis* genome into 100kb regions using the `fasta_generate_regions.py` script provided with freebayes. We used freebayes version 1.1.1
 ```bash
 fasta_generate_regions.py aten_final_0.1.fasta.fai 100000 > aten_regions.txt
 ```
@@ -12,7 +12,7 @@ Bam files for all samples were indexed with samtools (eg;)
 samtools index DI-1-10_merged_marked.bam
 ```
 
-Freebayes was then run as follows to call variants
+Freebayes was then run as follows;
 ```bash
 freebayes-parallel aten_regions.txt 46 -f aten_final_0.1.fasta \
 	-L lowcov_down_bams.txt \

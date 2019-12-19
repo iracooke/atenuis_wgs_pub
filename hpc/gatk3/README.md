@@ -1,8 +1,8 @@
 # Read Alignment and Preprocessing
 
-Raw sequence data was obtained as demultiplexed fastq files from the sequencing centre.  A complete listing of all these files is provided as [raw_fastq.list](hpc/gatk3/raw_fastq.list)
+Raw sequence data was obtained as demultiplexed fastq files from the Ramaciotti Centre for Genomics.  A complete listing of all these files is provided as [raw_fastq.list](hpc/gatk3/raw_fastq.list)
 
-Raw sequence data was processed according to GATK best practices.  Although GATK was not used for variant calling this pipeline is also useful for other variant callers because it ensures that appropriate metadata is embedded within bam files. It also incorporates adapter marking and duplicate marking, both of which are also used by Freebayes when calling.
+Raw sequence data was processed according to GATK best practices.  Although GATK was not used for variant calling this pipeline is also useful for other variant callers because it ensures that appropriate metadata is embedded within bam files. It also incorporates adapter marking and duplicate marking, both of which are also used by Freebayes when calling as described [in the freebayes readme](https://github.com/ekg/freebayes)
 
 The script [02_map_read.sh](02_map_read.sh) provides details of adaptor marking, read mapping and duplicate marking.  This script uses picard version 2.18.13, bwa mem version 0.7.17 and samtools 1.7
 

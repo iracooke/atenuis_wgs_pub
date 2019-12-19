@@ -1,4 +1,4 @@
-# Acropora tenuis whole genome resequencing
+# Genetics of *Acropora tenuis* on the GBR using shallow whole genome resequencing
 
 Commands and R code to accompany the paper
 
