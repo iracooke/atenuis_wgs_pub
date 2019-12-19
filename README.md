@@ -18,8 +18,8 @@ tar -zxvf something
 ```
 3. Open the project file `atenuis_wgs_pub.Rproj` in RStudio and open the desired file (eg 01_population_structure.Rmd).  After installing any require R packages the code should run and produce plots and tables identical to those shown on the corresponding web link below.
 
-- [Population Structure](01_population_structure.md) : Rmd file [01_population_structure.md](01_population_structure.md)
-- [Estimating Mutation Rate](02_mutation_rates.md) : Rmd file [02_mutation_rates.md](02_mutation_rates.md)
+- [Population Structure](01_population_structure.md) : Rmd file [01_population_structure.Rmd](01_population_structure.Rmd)
+- [Estimating Mutation Rate](02_mutation_rates.md) : Rmd file [02_mutation_rates.Rmd](02_mutation_rates.Rmd)
 - [Demographic History with MSMC](03_msmc.md)
 - [Demographic History with dadi](04_dadi.md)
 - [Selective Sweep Detection with SweepFinder 2](05_sf2_thresholds.md)
