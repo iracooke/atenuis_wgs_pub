@@ -11,7 +11,7 @@ Shell scripts and R code to accompany the paper
 - [Variant filtering](hpc/freebayes_qc/README.md)
 - [Host mitochondrial genome assembly](hpc/mitogenome/README.md)
 - [Host mitochondrial haplotype network](hpc/mito_mapping/README.md)
-- [Mitochondrial haplotype networks for symbionts](hpc/symbiodinium/README.md)
+- [Symbiont mitochondrial haplotype network](hpc/symbiodinium/README.md)
 
 
 ### Downstream Analysis and Plots

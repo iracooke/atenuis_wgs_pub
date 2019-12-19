@@ -37,3 +37,5 @@ hpc/symbiodinium_profiles/genome_kraken_mpa
 hpc/repeats/
 
 
+# symbiont_mito
+hpc/symbiodinium/*.fasta
