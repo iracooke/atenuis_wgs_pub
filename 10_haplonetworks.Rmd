@@ -1,0 +1,55 @@
+---
+title: "Haplotype Network Statistics"
+output:
+  github_document:
+    pandoc_args: --webtex
+bibliography: bibliography.bib
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8,
+                      echo=FALSE, warning=FALSE, message=FALSE, cache = FALSE)
+```
+
+Visual inspection of the haplotype network for symbionts shows a pattern where plume sites tend to fall into a single haplotype whereas marine sites tend to be more diverse. In addition there seems to be a general pattern of differentiation these groups (plume and marine) since they share few haplotypes (with the notable exception of pandora reef which spans between both). 
+
+![symb_hapnet](figures/AllSymbC1MitoConsensus_GoodCoverage_PopArt.png)
+
+We use AMOVA [@Excoffier1992-pe] implemented in [pegas](https://cran.r-project.org/web/packages/pegas/index.html) [@Paradis2010-ds] version 0.12 to test whether genetic differentiation is significant between reefs and between plume and marine groupings.
+
+```{r}
+library(tidyverse)
+library(ade4)
+library(apex)
+library(adegenet)
+library(mmod)
+```
+
+The data used are aligned mitochondrial sequences for all 108 colonies that had sufficient coverage (at least 5x over the *Cladocopium* (C1) mitogenome).  The alignment is trimmed to exclude all ambiguities and is therefore 6170 bp in length.
+
+```{r}
+mhaps <- read.multiFASTA("hpc/symbiodinium/AllSymbC1MitoConsensus_GoodCoverageTrim.fasta")
+plot(mhaps, cex = 0.2)
+```
+
+We define strata according to reef and also to `wq` which represents the plume/marine grouping for reefs.
+
+```{r, echo=TRUE}
+mhaps.gid <- multidna2genind(mhaps, mlst = TRUE)
+
+sample_data <- tibble(sample=mhaps@labels) %>% 
+  mutate(reef = str_extract(sample,pattern = "[A-Z]+")) %>% 
+  mutate(wq = case_when(reef %in% c("DI","PR","MI") ~ "plume", reef %in% c("FI","PI") ~ "marine")) 
+
+strata(mhaps.gid) <- sample_data %>% select(wq, reef)
+setPop(mhaps.gid) <- ~reef
+```
+
+AMOVA is then performed based with reef nested within wq.  This indicates highly significant differentiation by reef but this is not significant for the water quality (`wq`) grouping, which reflects low power due to the small number of reefs sampled. 
+
+```{r, echo=TRUE}
+mhaps_dist <- dist.multidna(mhaps, pool = TRUE)
+pegas::amova(mhaps_dist ~ wq/reef, data = strata(mhaps.gid), nperm = 100)
+```
+
+
