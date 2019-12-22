@@ -25,6 +25,7 @@ Shell scripts and R code to accompany the paper
 - [Neutrality and Diversity statistics with ANGSD](07_popgen_stats.md) : Rmd file [07_popgen_stats.Rmd](07_popgen_stats.Rmd)
 - [Symbiont Profiles with kraken](08_metagenome.md) : Rmd file [(08_metagenome.Rmd)](08_metagenome.Rmd)
 - [Analysis of interspersed repeats](09_repeats.md) : Rmd file [(09_repeats.Rmd)](09_repeats.Rmd)
+- [Statistical Analysis of Symbiont Haplotypes](10_haplonetworks.md) : Rmd file [10_haplonetworks.Rmd](10_haplonetworks.Rmd)
 
 All of the sections above are provided as processed markdown files.  Clicking the link should display a web readable page with text, a few select commands and plots and tables. The code used to generate these pages is provided in the corresponding `.Rmd` file. If you would like to run the code in these files yourself you will need to;
 
