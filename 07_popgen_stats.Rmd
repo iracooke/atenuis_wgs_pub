@@ -93,7 +93,7 @@ north_td_sweeps <- read_tsv("hpc/angsd/north_Tajima_sweeps.tsv", col_names = c("
   add_column(location_id="north") 
 
 td_sweeps <- rbind(mi_td_sweeps,north_td_sweeps) %>% 
-  select(Chr="scaffold","WinCenter","location_id","sweep_score") %>% 
+  dplyr::select(Chr="scaffold","WinCenter","location_id","sweep_score") %>% 
   filter(sweep_score>=100)
 
 mi_north_fst <- read_tsv("hpc/angsd/MI.north.fst_windows.txt",col_names = c("region","Chr","WinCenter","Nsites","Fst"),skip = 1)
@@ -117,7 +117,7 @@ pop_stats_sweeps <- pop_stats_with_fst %>%
   left_join(td_sweeps,by=c("Chr","WinCenter","location_id")) %>% 
   mutate(in_sweep=ifelse(( !is.na(sweep_score)  ),"Sweep","Background")) %>% 
   filter(location_id %in% c("north")) %>% 
-  select(location_id,in_sweep,sweep_score,tW,tP,tF,tH,tL,Tajima,fuf,fud,fayh,zeng,Fst) %>% 
+  dplyr::select(location_id,in_sweep,sweep_score,tW,tP,tF,tH,tL,Tajima,fuf,fud,fayh,zeng,Fst) %>% 
   gather("stat","value",-location_id,-in_sweep,-sweep_score)
 
 fstlim=0.40

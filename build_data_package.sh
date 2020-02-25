@@ -1,5 +1,5 @@
 
-# raw_data
+# Annotation table
 echo raw_data/annotation_table.tsv > data.list
 
 # NGSADdmix
@@ -13,6 +13,8 @@ echo hpc/msmc/bootstrap_results >> data.list
 echo hpc/dadi/optim >> data.list
 echo hpc/dadi/dadi.thin1k.txt >> data.list
 
+#OrthoFinder results
+echo raw_data/Orthogroups.GeneCount.csv >> data.list
 
 # ms
 ls hpc/ms/*.gff >> data.list

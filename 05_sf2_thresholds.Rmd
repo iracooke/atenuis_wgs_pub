@@ -67,6 +67,7 @@ read_ms_twopop_sweeps <- function(model){
 }
 
 calc_fdr_pop <- function(indata,pop,decoy_model){
+
   data <- indata %>% filter(model %in% c(decoy_model,'real')) %>% filter(population==pop)
   ndecoy <- data %>% filter(model==decoy_model) %>% nrow()
   nreal <- data %>% filter(model=='real') %>% nrow()
@@ -138,24 +139,26 @@ discrete_fdr_d_all_2e <- discrete_fdr_d_all %>%
 
 discrete_fdr_d_all_2e$model <- factor(discrete_fdr_d_all_2e$model, levels = two_epoch_models)
 
-lr_threshold <- discrete_fdr_d_all_2e %>% 
-    group_by(model,population) %>% 
-  filter(decoy_ratio<0.10) %>% filter(LR == min(LR)) 
-
-
-discrete_fdr_d_all_2e %>% group_by(model,population) %>%
-  filter(LR>100) %>% summarise(fdr = max(decoy_ratio))
-
 ggplot(discrete_fdr_d_all_2e,aes(x=LR)) + 
   geom_line(aes(y=decoy_ratio)) + 
-  xlim(0,250) + 
+  xlim(0,250) + ylim(0,1) +
   facet_grid(model~population) +
-  geom_hline(yintercept=0.01) + 
-  geom_vline(data = lr_threshold,aes(xintercept = LR),color='red') +
+  geom_hline(yintercept=0.1, color='red') + 
   ylab("False Discovery Rate") +
   xlab("Sweepfinder CL Threshold, T") + theme_pubclean() +
   theme(strip.text = element_text(size = 8))
+
 ```
 
+For the analysis including all northern reefs together we used a CLR threshold of 100 whereas when looking at reefs separately we used CLR threshold of 50.  What FDR do these correspond to
 
+```{r}
+t100 <- discrete_fdr_d_all_2e %>% group_by(model,population) %>%
+  filter(LR>=100) %>% summarise(fdr = max(decoy_ratio),threshold=100) %>% 
+  filter(model=='isolation_asym_mig', population=='North')
+t50 <- discrete_fdr_d_all_2e %>% group_by(model,population) %>%
+  filter(LR>=50) %>% summarise(fdr = max(decoy_ratio),threshold=50) %>% 
+  filter(model=='isolation_asym_mig', population=='North')
+knitr::kable(rbind(t100,t50))
+```
 

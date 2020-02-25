@@ -97,6 +97,12 @@ ggplot(divsum_plot_recent %>% filter(!(broad_class %in% c("RNA","rRNA","Unknown"
   theme(legend.position = "bottom") + 
   facet_grid(species~broad_class) + xlim(0,40) +
   theme_pubr() + theme(legend.title = element_blank(), legend.position = "right") + theme(axis.text.x = element_text(angle = 90,size=6))
+ggsave("figures/major_repeat_classes.png",width = 12, height = 8)
 ```
 
+To obtain the percentage of Unclassified repeats we use the overall summary tables provided by RepeatMasker
+
+```bash
+grep -r 'Unclassified:' hpc/repeats/*
+```
 

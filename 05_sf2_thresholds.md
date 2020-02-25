@@ -117,3 +117,12 @@ Red vertical lines represent CLR threshold values for which the FDR
 reaches 10%.
 
 ![](05_sf2_thresholds_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+For the analysis including all northern reefs together we used a CLR
+threshold of 100 whereas when looking at reefs separately we used CLR
+threshold of 50. What FDR do these correspond to
+
+| model                | population |       fdr | threshold |
+| :------------------- | :--------- | --------: | --------: |
+| isolation\_asym\_mig | North      | 0.1018184 |       100 |
+| isolation\_asym\_mig | North      | 0.1491746 |        50 |
