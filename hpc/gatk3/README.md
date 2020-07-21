@@ -8,4 +8,4 @@ The script [02_map_read.sh](02_map_read.sh) provides details of adaptor marking,
 
 Since samples were multiplexed across multiple lanes it was necessary to merge these into a single bam file for input to Freebayes. The script [03_merge_mark.sh](hpc/gatk3/03_merge_mark.sh) performs this merging and then reruns the duplicate marking on the merged file.
 
-Although most samples were sequenced at low (~3x) depth there were two high depth samples. For some downstream analyses we created down-sampled versions of these files using samtools to randomly select reads to achieve a desired depth of 3x. (see [04_sampledeep.sh](hpc/gatk3/04_sampledeep.sh))
+Although most samples were sequenced at low (~3x) depth there were two high depth samples. For some downstream analyses we created down-sampled versions of these files using samtools to randomly select reads to achieve a desired depth of 3x. see [04_sampledeep.sh](hpc/gatk3/04_sampledeep.sh)

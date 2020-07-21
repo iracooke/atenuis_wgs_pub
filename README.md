@@ -7,6 +7,7 @@ Shell scripts and R code to accompany the paper
 ### Raw Data Processing
 
 - [Read Alignment and Preprocessing](hpc/gatk3/README.md)
+- [Summary of Read Mapping Rates](13_mapping.md)
 - [Variant calling](hpc/freebayes/README.md)
 - [Variant filtering](hpc/freebayes_qc/README.md)
 - [Host mitochondrial genome assembly](hpc/mitogenome/README.md)

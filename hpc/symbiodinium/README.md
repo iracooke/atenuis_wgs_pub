@@ -10,4 +10,4 @@ The remaining 107 sample sequences were then imported to geneious and sites with
 
 The haplotype network resulting from this alignment is shown below;
 
-![symbiont_haplonet](../../figures/AllSymbC1MitoConsensus_GoodCoverage_PopArt.png)
+![symbiont_haplonet](../../figures/AllSymbC1MitoConsensus_GoodCoverage_PopArt.svg)

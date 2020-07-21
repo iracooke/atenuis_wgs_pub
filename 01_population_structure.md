@@ -1,14 +1,14 @@
 Population Structure
 ================
 
-PCAngst was used to examine population structure. This program is
+PCAngsd was used to examine population structure. This program is
 specifically designed to work with low coverage data and calculates a
 sample covariance matrix (used for PCA plotting) and admixture
 proportions based on the optimal number of clusters.
 
-As input data PCAngst we used filtered SNPs in vcf format that were
+As input data PCAngsd we used filtered SNPs in vcf format that were
 called using Freebayes. The script
-[01\_import\_vcf.sh](hpc/NGSAdmix/01_import_vcf.sh) uses angst to
+[01\_import\_vcf.sh](hpc/NGSAdmix/01_import_vcf.sh) uses ANGSD to
 convert these Freebayes SNP calls into Beagle format while also
 filtering for Hardy Weinberg equilibrium (p \< 1e-6). The command takes
 the
@@ -18,7 +18,7 @@ form
 angsd -vcf-gl <input_vcf> -out <beagle_output> -fai <genome_index> -nind 148 -doMaf 1 -doGlf 2 -doMajorMinor 1 -SNP_pval 1e-6
 ```
 
-PCAngst was then run on these Beagle formatted files using the
+PCAngsd was then run on these Beagle formatted files using the
 command;
 
 ``` bash
@@ -31,7 +31,7 @@ distinction.
 
 ![](01_population_structure_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-Admixture proportions are also calculated by PCAngst (based on optimal K
+Admixture proportions are also calculated by PCAngsd (based on optimal K
 = 2). These can be plotted in the style of a STRUCTURE plot as
 follows;
 

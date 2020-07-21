@@ -1,0 +1,37 @@
+---
+title: "Read Mapping Rates"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+library(tidyverse)
+```
+
+```{r}
+library(tidyverse)
+source("R/load.R")
+source("R/constants.R")
+sample_table <- load_sample_table()
+```
+
+
+Overall read mapping rates were assessed using samtools flagstat which reports the percentage of all reads having at least one mapping entry in the bam file. 
+
+Note that since mapping is performed against the host genome these numbers are significantly affected by the proportion of symbiont reads in the sample. Almost all samples had high (>90%) mapping rates but mapping rates on average were slightly lower for Magnetic Island samples.  This could reflect the fact that the reference genome was built from an individual from Pelorus Island (northern population).  Of the Northern reefs Pelorus Island had the highest average mapping rate.
+
+
+```{r}
+mapping_rates <- read_tsv("hpc/gatk3/mapping_rates.tsv", 
+                          col_names = c("bamfile","rate")) %>% 
+  left_join(sample_table) %>% 
+  mutate(pop_order = site_order()[location_id])
+```
+```{r}
+ggplot(mapping_rates,aes(x=reorder(location_name,pop_order),y=rate)) +
+  geom_boxplot() + 
+  geom_point() +
+  xlab("") + ylab("Mapping Rate")
+```
+
