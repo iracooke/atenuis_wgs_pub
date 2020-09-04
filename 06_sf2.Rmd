@@ -112,14 +112,16 @@ annotated_sweep_genes <- nomi_sweep_genes_td %>% left_join(annotations, by=c('ge
 
 ```{r}
 # Sort and print key columns
-sweep_genes_summary <- annotated_sweep_genes %>% 
+sweep_genes_summary_all <- annotated_sweep_genes %>% 
   dplyr::select(sweep_id,geneid,score,Tajima,Fst,evalue,saccver,method,kegg,protein_name=`Protein names`,gene_name=`Gene names`,GO=ipr_go) %>% 
-  arrange(desc(score)) %>% 
-  filter(score>100) 
+  arrange(desc(score)) 
+
+sweep_genes_summary <- sweep_genes_summary_all %>% filter(score>100) 
 
 # This forms the basis of the initial gene list prior to filtering for Fst
 #
 #write_tsv(sweep_genes_summary,path = "results/sweep_genes_summary.tsv")
+#write_tsv(sweep_genes_summary_all,path = "results/sweep_genes_summary_all.tsv")
 ```
 
 Genes associated with these significant loci were identified using [bedtools window](https://bedtools.readthedocs.io/en/latest/content/tools/window.html).  This reports all overlaps between sweep loci (encoded as `nomi_10_sweeps.gff` and gene models). (see [07_genes_in_sweeps.sh](hpc/SF2/07_genes_in_sweeps.sh) for details).  A hand annotated version of this table is included as supplementary information with the paper. 

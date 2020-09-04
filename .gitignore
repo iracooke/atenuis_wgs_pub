@@ -31,13 +31,37 @@ hpc/angsd/*.txt
 hpc/angsd/*.pestPG
 hpc/angsd/*.tsv
 
+hpc/NGSRelate
+
 # symbiodinium_profiles
 hpc/symbiodinium_profiles/genome_kraken_mpa
 
 # repeats
 hpc/repeats/
 
+#bayescan
+hpc/bayescan
+
 
 # symbiont_mito
 hpc/symbiodinium/AllSymbC1MitoConsensus_GoodCoverage.fasta     
 hpc/symbiodinium/AllSymbC1MitoConsensus_GoodCoverageTrim.fasta
+
+hpc/SF2/afs_mi_nomi_all.vcf
+hpc/SF2/afs_mi_nomi_thinned_10000.vcf
+hpc/SF2/afs_north_all.vcf
+hpc/SF2/afs_north_thinned_10000.vcf
+hpc/SF2/di_allsites.af
+hpc/SF2/fi_allsites.af
+hpc/SF2/mi_allsites.af
+hpc/SF2/nomi_allsites.af
+hpc/SF2/pcadapt_pool_mi_nomi.txt
+hpc/SF2/pi_allsites.af
+hpc/SF2/pr_allsites.af
+
+results
+cache
+raw_data
+15_sampling*
+12_supptables*
+17_thin_afs*

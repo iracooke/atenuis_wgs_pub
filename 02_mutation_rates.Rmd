@@ -26,7 +26,7 @@ Where;
 
 A factor of 2 is applied to account for the fact that nucleotide divergence values are usually given in units of snps per base but since two sequences are being compared a fixed mutation in either sequence will result in a snp.  
 
-Here we derive the mutation rate using the divergence between *Acropora digitifera* and *Acropora tenuis*, species that have diverged by approximately 15 Million years [@Mao2018-bu]. In an attempt to avoid non-neutral effects we use the synonymous substitution rate between these species rather than the overall genome-wide divergence.  
+Here we derive the mutation rate using the divergence between *Acropora digitifera* and *Acropora tenuis*, species that have diverged by approximately 15 Million years [@Mao2018-bu]. This estimated divergence time is based on a phylogenomic analysis incorporating five Acropora genomes and outgroups Orbicella and Porites with two fossil calibration points (see detailed methods in [@Mao2018-bu]). In an attempt to avoid non-neutral effects we use the synonymous substitution rate between these species rather than the overall genome-wide divergence.  
 
 Synonymous substitution rates were estimated as follows;
 

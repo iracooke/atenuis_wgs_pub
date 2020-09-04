@@ -33,6 +33,21 @@ echo hpc/symbiodinium_profiles/genome_kraken_mpa >> data.list
 # repeats
 echo hpc/repeats/ >> data.list
 
+#Bayescan
+ls hpc/SF2/*allsites.af >> data.list
+echo hpc/SF2/afs_mi_nomi_thinned_10000.vcf >> data.list
+echo hpc/SF2/afs_north_thinned_10000.vcf >> data.list
+
+echo hpc/bayescan/population_afs_10k.tsv >> data.list
+echo hpc/bayescan/population_afs_10k_mi_nomi.tsv >> data.list
+echo hpc/bayescan/north_10kb.txt >> data.list
+echo hpc/bayescan/north_10kb_mi_nomi.txt >> data.list
+ls hpc/bayescan/north_10kb_mi_nomi/*  >> data.list
+ls hpc/bayescan/north_10kb_pr1000/* >> data.list
+
+#PCAdapt
+echo raw_data/Orthogroups.GeneCount.csv >> data.list
+
 
 # symbiont_mito
 echo hpc/symbiodinium/AllSymbC1MitoConsensus_GoodCoverage.fasta   >> data.list   

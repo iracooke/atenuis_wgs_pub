@@ -14,4 +14,6 @@ summarise_mapping(){
 
 export -f summarise_mapping
 
-parallel -j 40 summarise_mapping ::: *_merged_marked.bam
+parallel -j 40 summarise_mapping ::: *_merged_marked.bam > 05_summarise_mapping.log
+
+cat 05_summarise_mapping.log | awk 'OFS="\t"{print $1,$28}' | sed 's/(//' | sed 's/%//' > mapping_rates.tsv

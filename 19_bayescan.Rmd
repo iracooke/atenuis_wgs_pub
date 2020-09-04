@@ -1,0 +1,62 @@
+---
+title: "Analysis of differential selection with Bayescan"
+output: github_document
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r}
+library(tidyverse)
+source("hpc/bayescan/plot_R.r")
+```
+
+We used [Bayescan 2](http://cmpg.unibe.ch/software/BayeScan/) (Version 2.1) to search for genomic regions of high differentiation between populations (Fst outliers) as indicators of positive selection.  This was performed separately for two sets of samples; firstly between all four northern reefs, treating each reef as a separate sub-populations, and secondly between northern reefs as a whole and Magnetic Island.  This separation between analyses was necessary because Bayescan 2 is not designed to deal with hierarchical population structure, and as shown in our population structure analyses the divergence between Magnetic Island and northern populations was much greater than between individual northern reefs.  
+
+In order to ensure that only independent loci were provided to Bayescan 2 we first thinned data to ensure a physical distance of at least 10kb.  This greatly improved computational run times while also maintaining the integrity of false discovery rate calculations, which assume independence of loci. Thinning based purely on linkage disequilibrium was not possible since our low coverage data prevented accurate LD calculations.  This resulted in a total of 27109 sites available for analysis across all sampling locations and populations.  
+
+The same allele frequency data used for SweepFinder 2 analyses was then exported into Bayescan2 format using an `awk` script separately for northern populations and for the Magnetic Island vs North comparison.  
+
+Since we have a large number of sites (>27k) Bayescan 2 was run with prior odds set to 1000.  All other Bayescan parameters were kept at defaults
+
+# Northern Reefs
+
+Convergence was assessed using the Geweke diagnostic. On this basis an additional burn-in period was used for the Northern population analysis (1 million instead of the 50k default) in order to achieve convergence.
+
+```{r}
+library(coda)
+chain<-read.table("hpc/bayescan/north_10kb_pr1000/north_10kb.sel",header=TRUE)
+chain<-chain[-c(1)]
+chain_north<-mcmc(chain,thin=10)
+
+chain<-read.table("hpc/bayescan/north_10kb_mi_nomi/north_10kb_mi_nomi.sel",header=TRUE)
+chain<-chain[-c(1)]
+chain_mi<-mcmc(chain,thin=10)
+```
+
+```{r}
+geweke.diag(chain_north, frac1=0.1, frac2=0.5)
+geweke.plot(chain_north)
+```
+
+We used the `plot_bayescan` function provided with Bayescan to plot Fst values and assess statistical significance of outliers.  Even with false discovery rate set to 0.2 no outliers were identified. 
+
+```{r}
+north_snp_ids <- read_table2("hpc/bayescan/snp2id_north10kb.txt",col_names = c("snp","id"))
+r_north_10k <- plot_bayescan("hpc/bayescan/north_10kb_pr1000/north_10kb_fst.txt",FDR=0.2)
+```
+
+## Magnetic Island vs North
+
+```{r}
+geweke.diag(chain_mi, frac1=0.1, frac2=0.5)
+geweke.plot(chain_mi)
+```
+
+
+```{r}
+r_north_10k_mi_nomi <- plot_bayescan("hpc/bayescan/north_10kb_mi_nomi/north_10kb_mi_nomi_fst.txt", FDR=0.2)
+```
+

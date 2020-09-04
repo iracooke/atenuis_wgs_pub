@@ -129,8 +129,53 @@ ggplot(pop_stats_sweeps %>% filter(stat %in% c("Tajima","Fst")) %>% mutate(stat 
   facet_wrap(~stat,scales = "free") +
   theme_pubclean() +
   xlab("") + ylab("Density") +
-  theme(legend.title = element_blank(), legend.position = c(0.9,0.9)) 
+  theme(legend.title = element_blank(), legend.position = c(0.9,0.8))
+ggsave("figures/tajima_fst_sweeps.png",width=8,height = 4,dpi = 600)
 ```
 
+
+Also of interest is the distribution of Fst across the genome. We therefore create Manhattan style plots for the MI vs north comparison.
+
+```{r, eval=FALSE}
+scaff_sizes <- read_tsv("hpc/SF2/aten_chromsizes.txt",col_names = c("scaffold","scaffold_length"))
+
+scaff_offset <- scaff_sizes %>% 
+  filter(scaffold_length>1e6) %>% 
+  arrange(desc(scaffold_length)) %>% 
+  dplyr::mutate(offset = cumsum(scaffold_length)-scaffold_length) %>% 
+  dplyr::mutate(scaff_type = as.integer(row_number() %% 2) ) %>% 
+  rename(Chr=scaffold)
+
+read_fst_windows <- function(path){
+  comparison <- (basename(path) %>% str_match("(.*).fst_windows.txt"))[,2]
+  read_tsv(path,col_names = c("region","Chr","WinCenter","Nsites","Fst"),skip = 1) %>% add_column(comparison=comparison)
+}
+
+fst_window_files <- list.files("hpc/angsd/",pattern = "*fst_windows.txt",full.names = TRUE)
+
+fst_all_comps <- do.call(rbind,lapply(fst_window_files,read_fst_windows)) %>% 
+  filter(Nsites>1000)
+
+gradients <- c("Marine_vs_Plume","Marine_vs_Plume","North_vs_South","North_vs_South")
+names(gradients) <- c("DI.FI","PI.PR","FI.PI","DI.PR")
+
+fst_plot_data <- fst_all_comps %>% 
+  filter(comparison %in% c("DI.FI","PI.PR","FI.PI","DI.PR")) %>% 
+  mutate(gradient = gradients[comparison]) %>% 
+  left_join(scaff_offset) %>% 
+  filter(!is.na(offset)) %>% 
+  mutate(pos=WinCenter+offset) %>% 
+  filter(Fst>0.005)
+
+highlight_points <- data.frame(Chr=c("Sc0000151","xpSc0000361"),
+                               WinCenter=c(520691,503342),
+                               Fst=c(0.04,0.04)) %>% 
+  left_join(scaff_offset) %>% 
+  mutate(pos=WinCenter+offset)
+
+ggplot(fst_plot_data,aes(x=pos,y=Fst)) + geom_point(aes(color=scaff_type),size=0.01) + 
+  facet_wrap(~comparison, ncol=2) + 
+  geom_point(data=highlight_points,aes(x=pos,y=Fst),color="red")
+```
 
 

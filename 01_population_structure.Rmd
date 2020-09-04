@@ -37,7 +37,7 @@ PCAngsd was then run on these Beagle formatted files using the command;
 python pcangsd.py -beagle <beagle_file> -threads 40 -admix -admix_save -admix_auto 10000 -o <output_file>
 ```
 
-The covariance matrix can be used as the basis for a PCA.  Plotting the first two principle components reveals the clear Magnetic Island  - North distinction.
+The covariance matrix can be used as the basis for a PCA.  Plotting the first two principle components reveals the clear Magnetic Island  - North distinction. It also reveals two clear outliers `MI-2-9` and `MI-1-16`. 
 
 ```{r}
 accelerate_covmat <- read_table2("hpc/NGSadmix/accelerate_fb_pcangst_2.cov",col_names = FALSE) %>% 
@@ -67,7 +67,17 @@ ggplot(pop_pca ,aes(x=x,y=y)) +
   theme(legend.position = "bottom") +
   geom_label_repel(data=label_pca,aes(label=label), size=2,min.segment.length = 0.1,point.padding = 0.3, nudge_x = 0.01) +
     xlab("PC1") + ylab("PC2") +
-    theme(legend.title = element_blank(), text = element_text(size=10), legend.position = "right") + ylim(-0.16,0.05)
+    theme(legend.title = element_blank(), text = element_text(size=10), legend.position = "right") 
+
+ggplot(pop_pca ,aes(x=x,y=y)) + geom_point(aes(color=reorder(location_id,pop_order)),size=1) + 
+  theme_pubr() +
+  scale_color_manual(values = site_colors(), labels=site_labels()[names(site_colors())]) +
+  theme(legend.position = "bottom") +
+  geom_label_repel(data=label_pca,aes(label=label), size=2,min.segment.length = 0.1,point.padding = 0.3, nudge_x = 0.01) +
+    xlab("PC1 (14.4%)") + ylab("PC2 (0.8%)") +
+    theme(legend.title = element_blank(), text = element_text(size=5), legend.position = "right") 
+
+ggsave("figures/pcangst_accelerate.png",width = 12,height=8, units="cm")
 ```
 
 Admixture proportions are also calculated by PCAngsd (based on optimal K = 2).  These can be plotted in the style of a STRUCTURE plot as follows;

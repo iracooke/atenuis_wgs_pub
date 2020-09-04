@@ -11,6 +11,7 @@ library(tidyverse)
 
 ```{r}
 library(tidyverse)
+library(ggpubr)
 source("R/load.R")
 source("R/constants.R")
 sample_table <- load_sample_table()
@@ -28,10 +29,14 @@ mapping_rates <- read_tsv("hpc/gatk3/mapping_rates.tsv",
   left_join(sample_table) %>% 
   mutate(pop_order = site_order()[location_id])
 ```
+
 ```{r}
 ggplot(mapping_rates,aes(x=reorder(location_name,pop_order),y=rate)) +
   geom_boxplot() + 
   geom_point() +
-  xlab("") + ylab("Mapping Rate")
+  xlab("") + ylab("Mapping Rate") + 
+  theme_pubclean() +
+  theme(text = element_text(size=20)) + coord_flip()
+ggsave("figures/mapping_rates.png",width = 12)
 ```
 

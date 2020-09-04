@@ -1,0 +1,41 @@
+---
+title: "Orthogroups"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(VennDiagram)
+library(tidyverse)
+ogdata <- read_tsv("raw_data/Orthogroups.GeneCount.csv")
+```
+Number of genes in orthologous groups
+
+```{r}
+sum(ogdata$Acropora_tenuis)
+```
+
+
+```{r}
+og_adi <- ogdata %>% filter(Acropora_digifera>0) %>% pull("X1")
+og_amil <- ogdata %>% filter(Acropora_millepora>0) %>% pull("X1")
+og_aten <- ogdata %>% filter(Acropora_tenuis>0) %>% pull("X1")
+og_nemv <- ogdata %>% filter(Nematostella_vectensis>0) %>% pull("X1")
+```
+
+Number of orthogroups of which A. tenuis is a member
+
+```{r}
+length(og_aten)
+```
+
+Acropora venn diagram
+
+```{r}
+xl <- list(adi=og_adi,amil=og_amil,aten=og_aten)
+vd <- venn.diagram(xl,filename = NULL)
+grid.draw(vd)
+```
