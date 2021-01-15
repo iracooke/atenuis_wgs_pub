@@ -2,7 +2,7 @@
 
 Shell scripts and R code to accompany the paper
 
-> Signatures of selection in the Acropora tenuis holobiont reveal complex adaptations to inshore environments driven by Holocene climate change
+[Genomic signatures in the coral holobiont reveal host adaptations driven by Holocene climate change and reef specific symbionts](https://advances.sciencemag.org/content/6/48/eabc6318)
 
 ### Raw Data Processing
 
