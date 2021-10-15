@@ -27,9 +27,10 @@ python pcangsd.py -beagle <beagle_file> -threads 40 -admix -admix_save -admix_au
 
 The covariance matrix can be used as the basis for a PCA. Plotting the
 first two principle components reveals the clear Magnetic Island - North
-distinction.
+distinction. It also reveals two clear outliers `MI-2-9` and
+`MI-1-16`.
 
-![](01_population_structure_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](01_population_structure_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->![](01_population_structure_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
 
 Admixture proportions are also calculated by PCAngsd (based on optimal K
 = 2). These can be plotted in the style of a STRUCTURE plot as

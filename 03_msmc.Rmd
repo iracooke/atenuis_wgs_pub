@@ -78,13 +78,46 @@ ggplot(bs_data_gbr,aes(x=left_time_boundary/mu*gen,y=(1/lambda)/mu)) +
   scale_x_log10(breaks=c(1e+4,1e+5,1e+6,1e+7), labels=c("10kya","100kya","1mya","10mya")) +
   geom_step(aes(group=bsid,color=pop),alpha=0.04,size=1) +
   geom_step(data=bs_data_gbr_av, size=1,aes(color=pop)) +
-  scale_color_manual(values = site_colors(),labels=c("Flinders Island","Magnetic Island")) +
+  scale_color_manual(values = site_colors()[c("FI","MI")],labels=c("Flinders Island","Magnetic Island")) +
   ylim(0,ymax*1.2)+
   xlab("Years Ago") + 
   ylab(expression(paste("Effective Population Size ",N[e]))) + 
   theme_minimal() + theme(legend.title = element_blank(), legend.position = c(0.8,0.8)) + 
   theme(text=element_text(size=20), legend.title = element_blank())
 ```
+
+
+# With Climate Data
+
+We used climate data taken from [Bintanja and van de Wal 2008](https://www.nature.com/articles/nature07158) to provide an estimate of global averaged sea level. Local factors are not taken into account but generally account for differences on the order of ~1m which is roughly 2 orders of magnitude less than the largest changes shown.
+
+```{r}
+climate_data <- read_tsv("raw_data/nature07158-s2.txt",skip = 14)
+
+
+library(cowplot)
+
+nep <- ggplot(bs_data_gbr,aes(x=left_time_boundary/mu*gen,y=(1/lambda)/mu)) + 
+  scale_x_log10(breaks=c(1e+4,1e+5,1e+6,1e+7), labels=c("10kya","100kya","1mya","10mya"), limits=c(1e4,3e6)) +
+  geom_step(aes(group=bsid,color=pop),alpha=0.04,size=1) +
+  geom_step(data=bs_data_gbr_av, size=1,aes(color=pop)) +
+  scale_color_manual(values = site_colors()[c("FI","MI")],labels=c("Flinders Island","Magnetic Island")) +
+  ylim(0,ymax*1.2)+
+  xlab("") + 
+  ylab(expression(paste("Effective Population Size ",N[e]))) + 
+  theme_minimal() + theme(legend.title = element_blank(), legend.position = c(0.9,0.8))# + xlim(1e3,1e+7)
+nep
+
+cp <- ggplot(climate_data %>% filter(Time>10),aes(x=Time*1e3,y=-Ice_tot)) + 
+  geom_line() + 
+  scale_x_log10(breaks=c(1e+4,1e+5,1e+6,1e+7), labels=c("10kya","100kya","1mya","10mya"), limits=c(1e4,3e6)) +
+  theme_minimal() +
+  xlab("") + ylab("Sea Level")
+
+
+plot_grid(nep,cp, ncol = 1, align = "hv", axis = "lr", rel_heights = c(0.7,0.3))
+```
+
 
 Finally we write out the bootstrap averaged data in msmc format for later us in simulating data under these demographic histories. (See [05_sf2_thresholds.md](05_sf2_thresholds.md))
 

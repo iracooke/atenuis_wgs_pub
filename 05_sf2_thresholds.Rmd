@@ -149,6 +149,21 @@ ggplot(discrete_fdr_d_all_2e,aes(x=LR)) +
   theme(strip.text = element_text(size = 8))
 
 ```
+```{r}
+discrete_fdr_d_all_2e %>% 
+  filter(model=='isolation_asym_mig') %>% 
+  filter(population=="North") %>% 
+ggplot(aes(x=LR)) + 
+  geom_line(aes(y=decoy_ratio)) + 
+  xlim(0,250) + ylim(0,1) +
+  facet_grid(model~population) +
+  geom_hline(yintercept=0.1, color='red') + 
+  ylab("False Discovery Rate") +
+  xlab("Sweepfinder CL Threshold, T") + theme_pubclean() +
+  theme(strip.text = element_text(size = 8))
+
+ggsave("figures/iso_asym_mig_fdr.png",width=6,height=4)
+```
 
 For the analysis including all northern reefs together we used a CLR threshold of 100 whereas when looking at reefs separately we used CLR threshold of 50.  What FDR do these correspond to
 
